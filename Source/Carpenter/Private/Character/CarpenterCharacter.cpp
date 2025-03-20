@@ -3,30 +3,28 @@
 
 #include "Carpenter/Public/Character/CarpenterCharacter.h"
 
+#include "EnhancedInputComponent.h"
+#include "Components/ContractSystemComponent.h"
 
-// Sets default values
 ACarpenterCharacter::ACarpenterCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-}
-
-// Called when the game starts or when spawned
-void ACarpenterCharacter::BeginPlay()
-{
-	Super::BeginPlay();
 	
+	ContractSystemComponent = CreateDefaultSubobject<UContractSystemComponent>(TEXT("Contract System Component"));
+	ContractSystemComponent->SetIsReplicated(true);
 }
 
-// Called every frame
-void ACarpenterCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
 
-// Called to bind functionality to input
 void ACarpenterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ACarpenterCharacter::OnInteractAction);
+	}
 }
 
+void ACarpenterCharacter::OnInteractAction(const FInputActionValue& InputActionValue)
+{
+}
