@@ -4,7 +4,6 @@
 #include "Carpenter/Public/Character/CarpenterCharacter.h"
 
 #include "EnhancedInputComponent.h"
-#include "Components/ContractSystemComponent.h"
 
 ACarpenterCharacter::ACarpenterCharacter()
 {

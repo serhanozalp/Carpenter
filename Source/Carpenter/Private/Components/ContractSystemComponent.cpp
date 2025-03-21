@@ -72,7 +72,7 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 
 void UContractSystemComponent::OnRep_AvailableContracts()
 {
-	Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
+	//Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
 	OnContractListChanged.Broadcast(AvailableContracts);
 }
 

@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Carpenter/TP_ThirdPerson/TP_ThirdPersonCharacter.h"
+#include "Carpenter/TP_FirstPerson/TP_FirstPersonCharacter.h"
 #include "CarpenterCharacter.generated.h"
 
 class UContractSystemComponent;
 
 UCLASS()
-class CARPENTER_API ACarpenterCharacter : public ATP_ThirdPersonCharacter
+class CARPENTER_API ACarpenterCharacter : public ATP_FirstPersonCharacter
 {
 	GENERATED_BODY()
 
