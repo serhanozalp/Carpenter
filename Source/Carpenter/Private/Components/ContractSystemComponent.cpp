@@ -15,15 +15,12 @@ UContractSystemComponent::UContractSystemComponent()
 void UContractSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	if (UWorld* World = GetWorld())
 	{
-		if (ACarpenterCharacter* OwningCarpenterCharacter = GetOwningCarpenterCharacter())
+		if (GetOwner()->HasAuthority())
 		{
-			if (OwningCarpenterCharacter->HasAuthority() && OwningCarpenterCharacter->IsLocallyControlled())
-			{
-				World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
-			}
+			World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
 		}
 	}
 }
@@ -58,6 +55,7 @@ void UContractSystemComponent::Server_GenerateRandomContract()
 	float RewardMultiplier = FMath::RandRange(2.2f, 2.6f);
 	RandomContract.RewardAmount = RandomContract.RequestedItemData.CostAmount * RewardMultiplier;
 	AvailableContracts.Add(RandomContract);
+	OnContractListChanged.Broadcast(AvailableContracts);
 	Server_HandleGenerateContractTimer();
 }
 
@@ -75,6 +73,7 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 void UContractSystemComponent::OnRep_AvailableContracts()
 {
 	Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
+	OnContractListChanged.Broadcast(AvailableContracts);
 }
 
 

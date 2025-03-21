@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "CarpenterTypes/CarpenterStructTypes.h"
-#include "Character/CarpenterCharacter.h"
 #include "Components/ActorComponent.h"
 #include "ContractSystemComponent.generated.h"
 
-
 class ACarpenterCharacter;
 class UDataAsset_ItemProperties;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnContractListChanged, const TArray<FCarpenterContractData>& AvailableContracts)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CARPENTER_API UContractSystemComponent : public UActorComponent
@@ -18,6 +18,12 @@ class CARPENTER_API UContractSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+
+	//PROPERTY
+
+	FOnContractListChanged OnContractListChanged;
+
+	//METHOD
 	
 	UContractSystemComponent();
 	virtual void BeginPlay() override;
@@ -45,7 +51,5 @@ private:
 	
 	UFUNCTION()
 	void OnRep_AvailableContracts();
-
-	FORCEINLINE ACarpenterCharacter* GetOwningCarpenterCharacter() const { return Cast<ACarpenterCharacter>(GetOwner()); }
 	
 };

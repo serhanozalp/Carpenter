@@ -24,12 +24,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Input")
 	TObjectPtr<UInputAction> InteractAction;
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UContractSystemComponent> ContractSystemComponent;
 
 	//METHOD
 
 	void OnInteractAction(const FInputActionValue& InputActionValue);
-	
 };

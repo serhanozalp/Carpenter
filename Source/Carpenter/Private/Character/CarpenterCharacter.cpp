@@ -9,9 +9,6 @@
 ACarpenterCharacter::ACarpenterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	ContractSystemComponent = CreateDefaultSubobject<UContractSystemComponent>(TEXT("Contract System Component"));
-	ContractSystemComponent->SetIsReplicated(true);
 }
 
 

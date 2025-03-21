@@ -11,10 +11,12 @@ struct FCarpenterItemData
 
 	UPROPERTY(EditDefaultsOnly)
 	float CostAmount;
+
+	UPROPERTY(EditDefaultsOnly)
+	FString Name;
 	
 	UPROPERTY(EditDefaultsOnly)
-	FString MeshPath;
-	
+	TSoftObjectPtr<UStaticMesh> Mesh;
 };
 
 USTRUCT(BlueprintType)
@@ -26,9 +28,8 @@ struct FCarpenterContractData
 	FCarpenterItemData RequestedItemData;
 
 	UPROPERTY(EditDefaultsOnly)
-	FColor RequestedItemColor;
+	FLinearColor RequestedItemColor;
 
 	UPROPERTY(EditDefaultsOnly)
 	float RewardAmount;
-	
 };
