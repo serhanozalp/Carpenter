@@ -17,22 +17,7 @@ void ACarpenterItem::Interact(APawn* InteractorPawn)
 
 void ACarpenterItem::EnableOutline(bool bShouldEnable)
 {
-	if (OverlayMaterial.IsNull())
-	{
-		return;
-	}
-	if (!OverlayMaterial.IsValid())
-	{
-		OverlayMaterial.LoadSynchronous();
-	}
-	
-	if (bShouldEnable)
-	{
-		ItemMesh->SetOverlayMaterial(OverlayMaterial.Get());
-	}
-	else
-	{
-		ItemMesh->SetOverlayMaterial(nullptr);
-	}
+	UMaterial* Material = bShouldEnable ? OverlayMaterial : nullptr;
+	ItemMesh->SetOverlayMaterial(Material);
 }
 

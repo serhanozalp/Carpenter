@@ -24,5 +24,5 @@ private:
 	TObjectPtr<UStaticMeshComponent> ItemMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Materials")
-	TSoftObjectPtr<UMaterial> OverlayMaterial;
+	TObjectPtr<UMaterial> OverlayMaterial;
 };
