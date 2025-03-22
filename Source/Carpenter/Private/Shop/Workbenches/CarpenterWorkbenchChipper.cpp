@@ -7,8 +7,10 @@
 #include "Components/ContractSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "DataAssets/DataAsset_ItemProperties.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Shop/CarpenterShop.h"
+#include "Shop/Items/CarpenterItem.h"
 #include "Shop/Workbenches/Buttons/CarpenterWorkshopButtonBase.h"
 #include "Widgets/Shop/Workbenches/CarpenterWidgetChipperDisplay.h"
 
@@ -35,25 +37,39 @@ void ACarpenterWorkbenchChipper::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BindButtonDelegates();
+	if (HasAuthority())
+	{
+		Server_BindButtonDelegates();
+	}
+	else
+	{
+		OnRep_SelectedItemIndex();
+	}
 }
 
-void ACarpenterWorkbenchChipper::OnLeftButtonClicked()
+void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked()
 {
-	Debug::Print("OnLeftButtonClicked");
-	ServerRPC_LeftButtonClicked();
+	SelectedItemIndex = FMath::Clamp(SelectedItemIndex-1, 0, CarpenterItemDataList.Num() - 1);
+	HandleItemDisplayWidget();
 }
 
-void ACarpenterWorkbenchChipper::OnRightButtonClicked()
+void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked()
 {
-	Debug::Print("OnRightButtonClicked");
-	ServerRPC_RightButtonClicked();
+	SelectedItemIndex = FMath::Clamp(SelectedItemIndex+  1, 0, CarpenterItemDataList.Num() - 1);
+	HandleItemDisplayWidget();
 }
 
-void ACarpenterWorkbenchChipper::OnBuildButtonClicked()
+void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked()
 {
-	Debug::Print("OnBuildButtonClicked");
-	ServerRPC_BuildButtonClicked();
+	if (!CarpenterItemClass)
+	{
+		return;
+	}
+	
+	if (ACarpenterItem* CarpenterItem = GetWorld()->SpawnActor<ACarpenterItem>(CarpenterItemClass, FVector::ZeroVector, FRotator::ZeroRotator))
+	{
+		CarpenterItem->Server_SetItemMesh(CarpenterItemDataList[SelectedItemIndex].Mesh.LoadSynchronous());
+	}
 }
 
 void ACarpenterWorkbenchChipper::Server_Initialize()
@@ -62,6 +78,7 @@ void ACarpenterWorkbenchChipper::Server_Initialize()
 	{
 		return;
 	}
+	
 	if (UContractSystemComponent* ContractSystemComponent = OwningCarpenterShop->GetContractSystemComponent())
 	{
 		if (UDataAsset_ItemProperties* ItemPropertiesDataAsset = ContractSystemComponent->GetItemPropertiesDataAsset())
@@ -78,23 +95,6 @@ void ACarpenterWorkbenchChipper::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 	DOREPLIFETIME(ACarpenterWorkbenchChipper, SelectedItemIndex);
 	DOREPLIFETIME_CONDITION(ACarpenterWorkbenchChipper, CarpenterItemDataList, COND_InitialOnly);
-}
-
-void ACarpenterWorkbenchChipper::ServerRPC_LeftButtonClicked_Implementation()
-{
-	Debug::Print("ACarpenterWorkbenchChipper::ServerRPC_LeftButtonClicked");
-	SelectedItemIndex = FMath::Clamp(SelectedItemIndex-1, 0, CarpenterItemDataList.Num() - 1);
-	HandleItemDisplayWidget();
-}
-
-void ACarpenterWorkbenchChipper::ServerRPC_RightButtonClicked_Implementation()
-{
-	SelectedItemIndex = FMath::Clamp(SelectedItemIndex+  1, 0, CarpenterItemDataList.Num() - 1);
-	HandleItemDisplayWidget();
-}
-
-void ACarpenterWorkbenchChipper::ServerRPC_BuildButtonClicked_Implementation()
-{
 }
 
 void ACarpenterWorkbenchChipper::Server_SetSelectedItemIndex(int32 ItemIndex)
@@ -121,25 +121,23 @@ void ACarpenterWorkbenchChipper::HandleItemDisplayWidget()
 	}
 }
 
-void ACarpenterWorkbenchChipper::BindButtonDelegates()
+void ACarpenterWorkbenchChipper::Server_BindButtonDelegates()
 {
 	if (ACarpenterWorkshopButtonBase* LeftButton = Cast<ACarpenterWorkshopButtonBase>(LeftButtonComponent->GetChildActor()))
 	{
-			LeftButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::OnLeftButtonClicked);
+			LeftButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked);
 	}
 	if (ACarpenterWorkshopButtonBase* RightButton = Cast<ACarpenterWorkshopButtonBase>(RightButtonComponent->GetChildActor()))
 	{
-		RightButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::OnRightButtonClicked);
+		RightButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnRightButtonClicked);
 	}
 	if (ACarpenterWorkshopButtonBase* BuildButton = Cast<ACarpenterWorkshopButtonBase>(BuildButtonComponent->GetChildActor()))
 	{
-		BuildButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::OnBuildButtonClicked);
+		BuildButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked);
 	}
-	
 }
 
 void ACarpenterWorkbenchChipper::OnRep_SelectedItemIndex()
 {
-	Debug::Print("Client, Selected Item Changed");
 	HandleItemDisplayWidget();
 }

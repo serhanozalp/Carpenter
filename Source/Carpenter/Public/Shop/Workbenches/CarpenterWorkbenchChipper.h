@@ -6,6 +6,7 @@
 #include "Shop/CarpenterWorkbenchBase.h"
 #include "CarpenterWorkbenchChipper.generated.h"
 
+class ACarpenterItem;
 class UCarpenterWidgetChipperDisplay;
 struct FCarpenterItemData;
 class UWidgetComponent;
@@ -49,6 +50,9 @@ private:
 
 	TObjectPtr<UCarpenterWidgetChipperDisplay> ItemDisplayWidget;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	TSubclassOf<ACarpenterItem> CarpenterItemClass;
+
 	//METHOD
 
 	UFUNCTION()
@@ -56,25 +60,16 @@ private:
 	
 	void Server_SetSelectedItemIndex(int32 ItemIndex);
 
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_LeftButtonClicked();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_RightButtonClicked();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_BuildButtonClicked();
-
 	void HandleItemDisplayWidget();
-	
-	UFUNCTION()
-	void OnRightButtonClicked();
 
 	UFUNCTION()
-	void OnLeftButtonClicked();
+	void Server_OnLeftButtonClicked();
+	
+	UFUNCTION()
+	void Server_OnRightButtonClicked();
 
 	UFUNCTION()
-	void OnBuildButtonClicked();
+	void Server_OnBuildButtonClicked();
 	
-	void BindButtonDelegates();
+	void Server_BindButtonDelegates();
 };
