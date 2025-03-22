@@ -6,7 +6,8 @@
 ACarpenterWorkbenchBase::ACarpenterWorkbenchBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
+	
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	

@@ -31,6 +31,8 @@ public:
 	virtual void Server_Initialize() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UDataAsset_ItemProperties* GetItemPropertiesDataAsset();
+
 private:
 	
 	//PROPERTY
@@ -50,6 +52,7 @@ private:
 
 	void Server_GenerateRandomContract();
 	void Server_HandleGenerateContractTimer();
+	void Server_LoadItemPropertiesDataAsset();
 	
 	UFUNCTION()
 	void OnRep_AvailableContracts();

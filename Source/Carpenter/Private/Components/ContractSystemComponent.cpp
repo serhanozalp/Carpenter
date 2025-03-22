@@ -27,6 +27,11 @@ void UContractSystemComponent::BeginPlay()
 
 void UContractSystemComponent::Server_Initialize()
 {
+	Server_LoadItemPropertiesDataAsset();
+}
+
+void UContractSystemComponent::Server_LoadItemPropertiesDataAsset()
+{
 	if (ItemProperties.IsNull())
 	{
 		return;
@@ -42,6 +47,12 @@ void UContractSystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UContractSystemComponent, AvailableContracts);
+}
+
+UDataAsset_ItemProperties* UContractSystemComponent::GetItemPropertiesDataAsset()
+{
+	Server_LoadItemPropertiesDataAsset();
+	return ItemProperties.Get();
 }
 
 void UContractSystemComponent::Server_GenerateRandomContract()
@@ -75,7 +86,7 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 
 void UContractSystemComponent::OnRep_AvailableContracts()
 {
-	Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
+	//Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
 	OnContractListChanged.Broadcast(AvailableContracts);
 }
 

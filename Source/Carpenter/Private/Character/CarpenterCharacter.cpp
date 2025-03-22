@@ -3,8 +3,8 @@
 
 #include "Carpenter/Public/Character/CarpenterCharacter.h"
 
-#include "Interfaces/Interactable.h"
 #include "EnhancedInputComponent.h"
+#include "Carpenter/DebugHelper.h"
 #include "Framework/PlayerControllers/CarpenterPlayerController.h"
 
 ACarpenterCharacter::ACarpenterCharacter()
@@ -31,6 +31,15 @@ void ACarpenterCharacter::OnInteractAction(const FInputActionValue& InputActionV
 
 	if (TScriptInterface<IInteractable> InteractableObject = CachedCarpenterPlayerController->GetCurrentInteractableObject())
 	{
-		InteractableObject->Interact(this);
+		ServerRPC_InteractObject(InteractableObject, this);
+		//InteractableObject->Interact(this);
+	}
+}
+
+void ACarpenterCharacter::ServerRPC_InteractObject_Implementation(const TScriptInterface<IInteractable>& ObjectToInteract, APawn* InteractorPawn)
+{
+	if (ObjectToInteract)
+	{
+		ObjectToInteract->Interact(InteractorPawn);
 	}
 }

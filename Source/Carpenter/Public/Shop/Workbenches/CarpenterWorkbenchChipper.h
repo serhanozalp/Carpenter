@@ -6,6 +6,8 @@
 #include "Shop/CarpenterWorkbenchBase.h"
 #include "CarpenterWorkbenchChipper.generated.h"
 
+class UCarpenterWidgetChipperDisplay;
+struct FCarpenterItemData;
 class UWidgetComponent;
 
 UCLASS()
@@ -17,23 +19,62 @@ public:
 
 	ACarpenterWorkbenchChipper();
 	virtual void Server_Initialize() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 protected:
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Custom|Events")
-	void LeftButtonClicked();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Custom|Events")
-	void RightButtonClicked();
+	
+	virtual void BeginPlay() override;
 	
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UChildActorComponent> LeftButton;
+	//PROPERTY
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UChildActorComponent> RightButton;
+	TObjectPtr<UChildActorComponent> LeftButtonComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UChildActorComponent> RightButtonComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UChildActorComponent> BuildButtonComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
-	TObjectPtr<UWidgetComponent> ItemDisplayWidget;
+	TObjectPtr<UWidgetComponent> ItemDisplayWidgetComponent;
+
+	UPROPERTY(Replicated)
+	TArray<FCarpenterItemData> CarpenterItemDataList;
+
+	UPROPERTY(ReplicatedUsing = OnRep_SelectedItemIndex)
+	int32 SelectedItemIndex;
+
+	TObjectPtr<UCarpenterWidgetChipperDisplay> ItemDisplayWidget;
+
+	//METHOD
+
+	UFUNCTION()
+	void OnRep_SelectedItemIndex();
+	
+	void Server_SetSelectedItemIndex(int32 ItemIndex);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_LeftButtonClicked();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RightButtonClicked();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_BuildButtonClicked();
+
+	void HandleItemDisplayWidget();
+	
+	UFUNCTION()
+	void OnRightButtonClicked();
+
+	UFUNCTION()
+	void OnLeftButtonClicked();
+
+	UFUNCTION()
+	void OnBuildButtonClicked();
+	
+	void BindButtonDelegates();
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Carpenter/TP_FirstPerson/TP_FirstPersonCharacter.h"
+#include "Interfaces/Interactable.h"
 #include "CarpenterCharacter.generated.h"
 
 class ACarpenterPlayerController;
@@ -32,4 +33,7 @@ private:
 	//METHOD
 
 	void OnInteractAction(const FInputActionValue& InputActionValue);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_InteractObject(const TScriptInterface<IInteractable>& ObjectToInteract, APawn* InteractorPawn);
 };

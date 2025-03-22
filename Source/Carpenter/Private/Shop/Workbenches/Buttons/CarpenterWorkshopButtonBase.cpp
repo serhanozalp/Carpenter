@@ -6,7 +6,7 @@
 ACarpenterWorkshopButtonBase::ACarpenterWorkshopButtonBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	ButtonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Button Mesh"));
 	SetRootComponent(ButtonMesh);
 }

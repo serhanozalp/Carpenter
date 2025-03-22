@@ -16,14 +16,11 @@ public:
 
 	FCarpenterItemData* GetRandomItemData();
 	FColor* GetRandomColor();
-	FORCEINLINE bool IsValid() const { return ItemData.Num() > 0 && Colors.Num() > 0; }
-
-private:
+	FORCEINLINE bool IsValid() const { return CarpenterItemDataList.Num() > 0 && ColorList.Num() > 0; }
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
-	TArray<FCarpenterItemData> ItemData;
+	TArray<FCarpenterItemData> CarpenterItemDataList;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
-	TArray<FColor> Colors;
-	
+	TArray<FColor> ColorList;
 };
