@@ -4,6 +4,7 @@
 
 #include "Components/ContractSystemComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
 #include "Widgets/CarpenterWidgetContractsHolder.h"
 
 
@@ -21,6 +22,11 @@ ACarpenterShop::ACarpenterShop()
 	AvailableContractsWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Available Contracts Widget"));
 	AvailableContractsWidget->SetupAttachment(GetRootComponent());
 	AvailableContractsWidget->SetDrawAtDesiredSize(true);
+
+	ChipperWorkbench = CreateDefaultSubobject<UChildActorComponent>(TEXT("Chipper Workbench"));
+	ChipperWorkbench->SetupAttachment(GetRootComponent());
+	PainterWorkbench = CreateDefaultSubobject<UChildActorComponent>(TEXT("Painter Workbench"));
+	PainterWorkbench->SetupAttachment(GetRootComponent());
 }
 
 void ACarpenterShop::BeginPlay()
@@ -34,6 +40,28 @@ void ACarpenterShop::BeginPlay()
 			ContractsHolderWidget->SetupOnContractListChangedDelegate(ContractSystemComponent);
 		}
 	}
+	
+	if (HasAuthority())
+	{
+		Server_Initialize();
+	}
 }
+
+void ACarpenterShop::Server_Initialize()
+{
+	if (ContractSystemComponent)
+	{
+		ContractSystemComponent->Server_Initialize();
+	}
+	
+	if (AActor* ChildActor = ChipperWorkbench->GetChildActor())
+	{
+		if (ACarpenterWorkbenchChipper* WorkbenchChipper = Cast<ACarpenterWorkbenchChipper>(ChildActor))
+		{
+			WorkbenchChipper->Server_Initialize();
+		}
+	}
+}
+
 
 

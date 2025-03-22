@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Shop/CarpenterWorkbenchBase.h"
-#include "ACarpenterWorkbenchPainter.generated.h"
+#include "CarpenterWorkbenchPainter.generated.h"
 
 UCLASS()
-class CARPENTER_API AACarpenterWorkbenchPainter : public ACarpenterWorkbenchBase
+class CARPENTER_API ACarpenterWorkbenchPainter : public ACarpenterWorkbenchBase
 {
 	GENERATED_BODY()
 
 public:
 
-	AACarpenterWorkbenchPainter();
+	ACarpenterWorkbenchPainter();
 };

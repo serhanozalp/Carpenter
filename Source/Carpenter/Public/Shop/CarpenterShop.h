@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/ServerInitialize.h"
 #include "CarpenterShop.generated.h"
 
 class UWidgetComponent;
 class UContractSystemComponent;
 
 UCLASS()
-class CARPENTER_API ACarpenterShop : public AActor
+class CARPENTER_API ACarpenterShop : public AActor, public IServerInitialize
 {
 	GENERATED_BODY()
 
@@ -18,6 +19,7 @@ public:
 
 	ACarpenterShop();
 	FORCEINLINE UContractSystemComponent* GetContractSystemComponent() const { return ContractSystemComponent; }
+	virtual void Server_Initialize() override;
 
 protected:
 	
@@ -25,12 +27,20 @@ protected:
 
 private:
 	
-	UPROPERTY(VisibleAnywhere)
+	//PROPERTY
+	
+	UPROPERTY(VisibleAnywhere , Category = "Custom|Components")
 	TObjectPtr<UStaticMeshComponent> ShopMesh;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
 	TObjectPtr<UContractSystemComponent> ContractSystemComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
 	TObjectPtr<UWidgetComponent> AvailableContractsWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UChildActorComponent> ChipperWorkbench;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UChildActorComponent> PainterWorkbench;
 };

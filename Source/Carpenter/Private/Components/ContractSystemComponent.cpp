@@ -25,6 +25,18 @@ void UContractSystemComponent::BeginPlay()
 	}
 }
 
+void UContractSystemComponent::Server_Initialize()
+{
+	if (ItemProperties.IsNull())
+	{
+		return;
+	}
+	if (!ItemProperties.IsValid())
+	{
+		ItemProperties.LoadSynchronous();
+	}
+}
+
 void UContractSystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -34,19 +46,9 @@ void UContractSystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 void UContractSystemComponent::Server_GenerateRandomContract()
 {
-	if (ItemProperties.IsNull())
-	{
-		return;
-	}
 	if (!ItemProperties.IsValid())
 	{
-		if (UDataAsset_ItemProperties* LoadedAsset = ItemProperties.LoadSynchronous())
-		{
-			if (!LoadedAsset->IsValid())
-			{
-				return;
-			}
-		}
+		return;
 	}
 	
 	FCarpenterContractData RandomContract;
@@ -54,6 +56,7 @@ void UContractSystemComponent::Server_GenerateRandomContract()
 	RandomContract.RequestedItemColor = *ItemProperties->GetRandomColor();
 	float RewardMultiplier = FMath::RandRange(2.2f, 2.6f);
 	RandomContract.RewardAmount = RandomContract.RequestedItemData.CostAmount * RewardMultiplier;
+	
 	AvailableContracts.Add(RandomContract);
 	OnContractListChanged.Broadcast(AvailableContracts);
 	Server_HandleGenerateContractTimer();
@@ -72,11 +75,8 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 
 void UContractSystemComponent::OnRep_AvailableContracts()
 {
-	//Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
+	Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
 	OnContractListChanged.Broadcast(AvailableContracts);
 }
-
-
-
 
 

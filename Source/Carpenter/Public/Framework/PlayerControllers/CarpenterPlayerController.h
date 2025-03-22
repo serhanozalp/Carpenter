@@ -19,6 +19,8 @@ public:
 	ACarpenterPlayerController();
 	virtual void Tick(float DeltaSeconds) override;
 
+	FORCEINLINE TScriptInterface<IInteractable> GetCurrentInteractableObject() const { return CurrentInteractableObject; }
+
 private:
 	
 	//PROPERTY

@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Shop/Workbenches/ACarpenterWorkbenchPainter.h"
+#include "Shop/Workbenches/CarpenterWorkbenchPainter.h"
 
-AACarpenterWorkbenchPainter::AACarpenterWorkbenchPainter()
+ACarpenterWorkbenchPainter::ACarpenterWorkbenchPainter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }

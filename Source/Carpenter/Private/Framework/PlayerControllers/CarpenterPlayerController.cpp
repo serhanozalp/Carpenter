@@ -30,7 +30,7 @@ void ACarpenterPlayerController::CheckForInteractableActors()
 	
 	FVector CameraLocation;
 	FRotator CameraRotation;
-	ControlledPawn->GetActorEyesViewPoint(CameraLocation, CameraRotation);
+	GetPlayerViewPoint(CameraLocation, CameraRotation);
 	
 	FHitResult HitResult;
 	GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, CameraLocation + (CameraRotation.Vector() * InteractionRange), ECC_Visibility, QueryParams);

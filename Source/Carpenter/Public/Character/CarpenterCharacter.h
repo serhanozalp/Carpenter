@@ -6,6 +6,7 @@
 #include "Carpenter/TP_FirstPerson/TP_FirstPersonCharacter.h"
 #include "CarpenterCharacter.generated.h"
 
+class ACarpenterPlayerController;
 class UContractSystemComponent;
 
 UCLASS()
@@ -24,6 +25,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Input")
 	TObjectPtr<UInputAction> InteractAction;
+
+	UPROPERTY()
+	TObjectPtr<ACarpenterPlayerController> CachedCarpenterPlayerController;
 
 	//METHOD
 

@@ -3,13 +3,14 @@
 
 #include "Carpenter/Public/Character/CarpenterCharacter.h"
 
+#include "Interfaces/Interactable.h"
 #include "EnhancedInputComponent.h"
+#include "Framework/PlayerControllers/CarpenterPlayerController.h"
 
 ACarpenterCharacter::ACarpenterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
-
 
 void ACarpenterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -23,4 +24,13 @@ void ACarpenterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void ACarpenterCharacter::OnInteractAction(const FInputActionValue& InputActionValue)
 {
+	if (!CachedCarpenterPlayerController)
+	{
+		CachedCarpenterPlayerController = CastChecked<ACarpenterPlayerController>(GetController());
+	}
+
+	if (TScriptInterface<IInteractable> InteractableObject = CachedCarpenterPlayerController->GetCurrentInteractableObject())
+	{
+		InteractableObject->Interact(this);
+	}
 }

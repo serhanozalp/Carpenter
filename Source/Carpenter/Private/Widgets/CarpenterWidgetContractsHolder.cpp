@@ -22,6 +22,7 @@ void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpen
 	{
 		return;
 	}
+	
 	HorizontalBox->ClearChildren();
 	for (const FCarpenterContractData& CarpenterContractData : AvailableContracts)
 	{

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CarpenterTypes/CarpenterStructTypes.h"
 #include "Components/ActorComponent.h"
+#include "Interfaces/ServerInitialize.h"
 #include "ContractSystemComponent.generated.h"
 
 class ACarpenterCharacter;
@@ -13,7 +14,7 @@ class UDataAsset_ItemProperties;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnContractListChanged, const TArray<FCarpenterContractData>& AvailableContracts)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class CARPENTER_API UContractSystemComponent : public UActorComponent
+class CARPENTER_API UContractSystemComponent : public UActorComponent, public IServerInitialize
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,7 @@ public:
 	
 	UContractSystemComponent();
 	virtual void BeginPlay() override;
+	virtual void Server_Initialize() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
@@ -51,5 +53,4 @@ private:
 	
 	UFUNCTION()
 	void OnRep_AvailableContracts();
-	
 };
