@@ -7,6 +7,7 @@
 #include "Interfaces/Interactable.h"
 #include "CarpenterCharacter.generated.h"
 
+class ACarpenterItem;
 class ACarpenterPlayerController;
 class UContractSystemComponent;
 
@@ -20,6 +21,8 @@ public:
 	ACarpenterCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	bool Server_PickupItem(ACarpenterItem* ItemToPickUp);
+
 private:
 
 	//PROPERTY
@@ -27,13 +30,19 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Input")
 	TObjectPtr<UInputAction> InteractAction;
 
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	TObjectPtr<USceneComponent> PickedUpItemHolder;
+	
 	UPROPERTY()
 	TObjectPtr<ACarpenterPlayerController> CachedCarpenterPlayerController;
+
+	UPROPERTY()
+	TObjectPtr<ACarpenterItem> CarriedCarpenterItem;
 
 	//METHOD
 
 	void OnInteractAction(const FInputActionValue& InputActionValue);
-
+	
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_InteractObject(const TScriptInterface<IInteractable>& ObjectToInteract, APawn* InteractorPawn);
 };

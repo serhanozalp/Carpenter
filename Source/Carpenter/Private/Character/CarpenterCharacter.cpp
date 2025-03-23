@@ -6,10 +6,14 @@
 #include "EnhancedInputComponent.h"
 #include "Carpenter/DebugHelper.h"
 #include "Framework/PlayerControllers/CarpenterPlayerController.h"
+#include "Shop/Items/CarpenterItem.h"
 
 ACarpenterCharacter::ACarpenterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	PickedUpItemHolder = CreateDefaultSubobject<USceneComponent>(TEXT("PickedUp Item Holder"));
+	PickedUpItemHolder->SetupAttachment(GetRootComponent());
 }
 
 void ACarpenterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -32,8 +36,24 @@ void ACarpenterCharacter::OnInteractAction(const FInputActionValue& InputActionV
 	if (TScriptInterface<IInteractable> InteractableObject = CachedCarpenterPlayerController->GetCurrentInteractableObject())
 	{
 		ServerRPC_InteractObject(InteractableObject, this);
-		//InteractableObject->Interact(this);
 	}
+}
+
+bool ACarpenterCharacter::Server_PickupItem(ACarpenterItem* ItemToPickUp)
+{
+	if (!ItemToPickUp || CarriedCarpenterItem)
+	{
+		return false;
+	}
+
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	if (ItemToPickUp->AttachToComponent(PickedUpItemHolder, TransformRules))
+	{
+		CarriedCarpenterItem = ItemToPickUp;
+		return true;
+	}
+	
+	return false;
 }
 
 void ACarpenterCharacter::ServerRPC_InteractObject_Implementation(const TScriptInterface<IInteractable>& ObjectToInteract, APawn* InteractorPawn)

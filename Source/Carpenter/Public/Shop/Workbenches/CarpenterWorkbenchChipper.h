@@ -72,4 +72,6 @@ private:
 	void Server_OnBuildButtonClicked();
 	
 	void Server_BindButtonDelegates();
+
+	void Server_HandleItemBuild();
 };

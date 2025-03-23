@@ -7,6 +7,10 @@
 #include "Interfaces/Interactable.h"
 #include "CarpenterItem.generated.h"
 
+class ACarpenterWorkbenchBase;
+enum class ECarpenterItemState : uint8;
+class ACarpenterCharacter;
+
 UCLASS()
 class CARPENTER_API ACarpenterItem : public AActor, public IInteractable
 {
@@ -20,22 +24,35 @@ public:
 	virtual void EnableOutline(bool bShouldEnable) override;
 
 	void Server_SetItemMesh(UStaticMesh* InItemMesh);
+	void Server_SetItemState(ECarpenterItemState InItemState);
+	void Server_SetAttachedWorkbench(ACarpenterWorkbenchBase* Workbench);
 
 private:
 
 	//PROPERTY
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
 	TObjectPtr<UStaticMeshComponent> ItemMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Materials")
 	TObjectPtr<UMaterial> OverlayMaterial;
 
+	UPROPERTY()
+	TObjectPtr<ACarpenterWorkbenchBase> AttachedWorkBench;
+
 	UPROPERTY(ReplicatedUsing = OnRep_ItemMeshToApply)
 	TObjectPtr<UStaticMesh> ItemMeshToApply;
+
+	UPROPERTY(ReplicatedUsing = OnRep_ItemState)
+	ECarpenterItemState ItemState;
 
 	//METHOD
 
 	UFUNCTION()
 	void OnRep_ItemMeshToApply();
+	
+	UFUNCTION()
+	void OnRep_ItemState();
+
+	void HandleItemState();
 };

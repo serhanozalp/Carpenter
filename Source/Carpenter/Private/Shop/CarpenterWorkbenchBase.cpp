@@ -13,10 +13,18 @@ ACarpenterWorkbenchBase::ACarpenterWorkbenchBase()
 	
 	WorkbenchMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Workbench Mesh"));
 	WorkbenchMesh->SetupAttachment(GetRootComponent());
+
+	ItemHolderComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item Holder"));
+	ItemHolderComponent->SetupAttachment(GetRootComponent());
 }
 
 void ACarpenterWorkbenchBase::Server_Initialize()
 {
+}
+
+void ACarpenterWorkbenchBase::Server_SetIsEmpty(bool bInIsEmpty)
+{
+	bIsEmpty = bInIsEmpty;
 }
 
 void ACarpenterWorkbenchBase::SetOwningCarpenterShop(ACarpenterShop* CarpenterShop)

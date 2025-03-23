@@ -4,10 +4,10 @@
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
 
 #include "Carpenter/DebugHelper.h"
+#include "CarpenterTypes/CarpenterEnumTypes.h"
 #include "Components/ContractSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "DataAssets/DataAsset_ItemProperties.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Shop/CarpenterShop.h"
 #include "Shop/Items/CarpenterItem.h"
@@ -65,10 +65,25 @@ void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked()
 	{
 		return;
 	}
-	
-	if (ACarpenterItem* CarpenterItem = GetWorld()->SpawnActor<ACarpenterItem>(CarpenterItemClass, FVector::ZeroVector, FRotator::ZeroRotator))
+	Server_HandleItemBuild();
+}
+
+void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
+{
+	if (!bIsEmpty)
 	{
+		return;
+	}
+	
+	FVector ItemPosition = ItemHolderComponent->GetComponentLocation();
+	FRotator ItemRotation = ItemHolderComponent->GetComponentRotation();
+	
+	if (ACarpenterItem* CarpenterItem = GetWorld()->SpawnActor<ACarpenterItem>(CarpenterItemClass, ItemPosition, ItemRotation))
+	{
+		CarpenterItem->Server_SetItemState(ECarpenterItemState::Initial);
 		CarpenterItem->Server_SetItemMesh(CarpenterItemDataList[SelectedItemIndex].Mesh.LoadSynchronous());
+		CarpenterItem->Server_SetAttachedWorkbench(this);
+		bIsEmpty = false;
 	}
 }
 

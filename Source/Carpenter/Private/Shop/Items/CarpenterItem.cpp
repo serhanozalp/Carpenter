@@ -2,26 +2,53 @@
 
 
 #include "Shop/Items/CarpenterItem.h"
+
+#include "Carpenter/DebugHelper.h"
+#include "CarpenterTypes/CarpenterEnumTypes.h"
+#include "Character/CarpenterCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include "Shop/CarpenterWorkbenchBase.h"
 
 ACarpenterItem::ACarpenterItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-		
+	
 	ItemMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item Mesh"));
 	SetRootComponent(ItemMeshComponent);
+	ItemMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	ItemMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACarpenterItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ACarpenterItem, ItemState);
 	DOREPLIFETIME_CONDITION(ACarpenterItem, ItemMeshToApply, COND_InitialOnly);
 }
 
 void ACarpenterItem::Interact(APawn* InteractorPawn)
 {
+	if (!InteractorPawn)
+	{
+		return;
+	}
+	
+	if (ACarpenterCharacter* CarpenterCharacter = Cast<ACarpenterCharacter>(InteractorPawn))
+	{
+		if (CarpenterCharacter->Server_PickupItem(this))
+		{
+			Debug::Print("Selam");
+			ItemState = ECarpenterItemState::PickedUp;
+			HandleItemState();
+			if (AttachedWorkBench)
+			{
+				AttachedWorkBench->Server_SetIsEmpty(true);
+				AttachedWorkBench = nullptr;
+			}
+		}
+	}
 }
 
 void ACarpenterItem::EnableOutline(bool bShouldEnable)
@@ -42,6 +69,23 @@ void ACarpenterItem::Server_SetItemMesh(UStaticMesh* InItemMesh)
 	}
 }
 
+void ACarpenterItem::Server_SetItemState(ECarpenterItemState InItemState)
+{
+	if (ItemState != InItemState)
+	{
+		ItemState = InItemState;
+		HandleItemState();
+	}
+}
+
+void ACarpenterItem::Server_SetAttachedWorkbench(ACarpenterWorkbenchBase* Workbench)
+{
+	if (Workbench)
+	{
+		AttachedWorkBench = Workbench;
+	}
+}
+
 void ACarpenterItem::OnRep_ItemMeshToApply()
 {
 	if (ItemMeshToApply)
@@ -50,4 +94,24 @@ void ACarpenterItem::OnRep_ItemMeshToApply()
 	}
 }
 
+void ACarpenterItem::OnRep_ItemState()
+{
+	HandleItemState();
+}
+
+void ACarpenterItem::HandleItemState()
+{
+	switch (ItemState)
+	{
+		case ECarpenterItemState::Initial:
+			ItemMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+			ItemMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		break;
+		case ECarpenterItemState::PickedUp:
+			ItemMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		break;
+		case ECarpenterItemState::Dropped:
+		break;
+	}
+}
 

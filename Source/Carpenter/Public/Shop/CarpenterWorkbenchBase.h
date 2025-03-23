@@ -19,12 +19,19 @@ public:
 	ACarpenterWorkbenchBase();
 	virtual void Server_Initialize() override;
 
+	void Server_SetIsEmpty(bool bInIsEmpty);
+
 protected:
 
 	//PROPERTY
 	
 	UPROPERTY()
 	TObjectPtr<ACarpenterShop> OwningCarpenterShop;
+
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	TObjectPtr<USceneComponent> ItemHolderComponent;
+
+	bool bIsEmpty = true;
 
 	//METHOD
 	
