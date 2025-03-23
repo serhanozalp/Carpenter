@@ -13,7 +13,7 @@ ACarpenterWorkshopButtonBase::ACarpenterWorkshopButtonBase()
 
 void ACarpenterWorkshopButtonBase::Interact(APawn* InteractorPawn)
 {
-	OnButtonInteracted.Broadcast();
+	OnButtonInteracted.Broadcast(InteractorPawn);
 }
 
 void ACarpenterWorkshopButtonBase::EnableOutline(bool bShouldEnable)

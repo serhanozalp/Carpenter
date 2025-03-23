@@ -16,7 +16,7 @@ struct FCarpenterItemData
 	FString Name;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<UStaticMesh> Mesh;
+	UStaticMesh* Mesh;
 };
 
 USTRUCT(BlueprintType)

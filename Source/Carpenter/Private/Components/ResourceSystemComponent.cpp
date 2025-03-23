@@ -14,7 +14,7 @@ UResourceSystemComponent::UResourceSystemComponent()
 void UResourceSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	if (!GetOwner()->HasAuthority())
 	{
 		OnRep_MoneyAmount();
@@ -24,7 +24,7 @@ void UResourceSystemComponent::BeginPlay()
 void UResourceSystemComponent::Server_Initialize()
 {
 	RemainingMoneyAmount = StartingMoneyAmount;
-	OnMoneyAmountChanged.Broadcast(RemainingMoneyAmount);
+	OnRep_MoneyAmount();
 }
 
 void UResourceSystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

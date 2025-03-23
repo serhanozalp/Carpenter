@@ -39,7 +39,6 @@ void ACarpenterItem::Interact(APawn* InteractorPawn)
 	{
 		if (CarpenterCharacter->Server_PickupItem(this))
 		{
-			Debug::Print("Selam");
 			ItemState = ECarpenterItemState::PickedUp;
 			HandleItemState();
 			if (AttachedWorkBench)

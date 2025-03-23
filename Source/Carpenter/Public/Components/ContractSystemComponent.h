@@ -31,6 +31,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UDataAsset_ItemProperties* GetItemPropertiesDataAsset();
+	float Server_CompleteContract(const FCarpenterContractData& ContractToCheck);
 
 private:
 	
@@ -51,7 +52,6 @@ private:
 
 	void Server_GenerateRandomContract();
 	void Server_HandleGenerateContractTimer();
-	void Server_StartGenerateContractTimer();
 	void Server_LoadItemPropertiesDataAsset();
 	
 	UFUNCTION()

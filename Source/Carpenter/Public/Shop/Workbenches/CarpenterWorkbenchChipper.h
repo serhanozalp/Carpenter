@@ -63,13 +63,13 @@ private:
 	void HandleItemDisplayWidget();
 
 	UFUNCTION()
-	void Server_OnLeftButtonClicked();
+	void Server_OnLeftButtonClicked(APawn* InteractorPawn);
 	
 	UFUNCTION()
-	void Server_OnRightButtonClicked();
+	void Server_OnRightButtonClicked(APawn* InteractorPawn);
 
 	UFUNCTION()
-	void Server_OnBuildButtonClicked();
+	void Server_OnBuildButtonClicked(APawn* InteractorPawn);
 	
 	void Server_BindButtonDelegates();
 

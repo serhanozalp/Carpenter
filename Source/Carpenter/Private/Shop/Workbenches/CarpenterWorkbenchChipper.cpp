@@ -48,21 +48,19 @@ void ACarpenterWorkbenchChipper::BeginPlay()
 	}
 }
 
-void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked()
+void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked(APawn* InteractorPawn)
 {
 	Server_SetSelectedItemIndex(--SelectedItemIndex);
-	//SelectedItemIndex = FMath::Clamp(SelectedItemIndex-1, 0, CarpenterItemDataList.Num() - 1);
 	HandleItemDisplayWidget();
 }
 
-void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked()
+void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked(APawn* InteractorPawn)
 {
 	Server_SetSelectedItemIndex(++SelectedItemIndex);
-	//SelectedItemIndex = FMath::Clamp(SelectedItemIndex+  1, 0, CarpenterItemDataList.Num() - 1);
 	HandleItemDisplayWidget();
 }
 
-void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked()
+void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked(APawn* InteractorPawn)
 {
 	if (!CarpenterItemClass)
 	{
@@ -89,7 +87,7 @@ void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
 	if (ACarpenterItem* CarpenterItem = GetWorld()->SpawnActor<ACarpenterItem>(CarpenterItemClass, ItemPosition, ItemRotation))
 	{
 		CarpenterItem->Server_SetItemState(ECarpenterItemState::Initial);
-		CarpenterItem->Server_SetItemMesh(CarpenterItemDataList[SelectedItemIndex].Mesh.LoadSynchronous());
+		CarpenterItem->Server_SetItemMesh(CarpenterItemDataList[SelectedItemIndex].Mesh);
 		CarpenterItem->Server_SetAttachedWorkbench(this);
 		bIsEmpty = false;
 	}

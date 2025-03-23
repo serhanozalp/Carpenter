@@ -7,6 +7,8 @@
 #include "Interfaces/ServerInitialize.h"
 #include "CarpenterShop.generated.h"
 
+class ACarpenterCharacter;
+class ACarpenterItem;
 class UResourceSystemComponent;
 class UWidgetComponent;
 class UContractSystemComponent;
@@ -49,9 +51,17 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
 	TObjectPtr<UWidgetComponent> ResourceWidgetComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	TObjectPtr<UChildActorComponent> SellZone;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UChildActorComponent> ChipperWorkbench;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UChildActorComponent> PainterWorkbench;
+
+	//METHOD
+
+	UFUNCTION()
+	void Server_OnSellZoneButtonClicked(APawn* InteractorPawn);
 };

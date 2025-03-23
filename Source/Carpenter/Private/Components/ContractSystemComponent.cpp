@@ -15,7 +15,7 @@ UContractSystemComponent::UContractSystemComponent()
 void UContractSystemComponent::Server_Initialize()
 {
 	Server_LoadItemPropertiesDataAsset();
-	Server_StartGenerateContractTimer();
+	Server_HandleGenerateContractTimer();
 }
 
 void UContractSystemComponent::Server_LoadItemPropertiesDataAsset()
@@ -43,13 +43,29 @@ UDataAsset_ItemProperties* UContractSystemComponent::GetItemPropertiesDataAsset(
 	return ItemProperties.Get();
 }
 
+float UContractSystemComponent::Server_CompleteContract(const FCarpenterContractData& ContractToCheck)
+{
+	for (int32 i = 0; i < AvailableContracts.Num(); i++)
+	{
+		if (ContractToCheck.RequestedItemData.Mesh == AvailableContracts[i].RequestedItemData.Mesh)
+		{
+			float RewardAmount = AvailableContracts[i].RewardAmount * 0.5;
+			AvailableContracts.RemoveAt(i);
+			OnRep_AvailableContracts();
+			Server_HandleGenerateContractTimer();
+			return RewardAmount;
+		}
+	}
+	return 0.0f;
+}
+
 void UContractSystemComponent::Server_GenerateRandomContract()
 {
 	if (!ItemProperties.IsValid())
 	{
 		return;
 	}
-	
+	Debug::Print("Contract Generated");
 	FCarpenterContractData RandomContract;
 	RandomContract.RequestedItemData = *ItemProperties->GetRandomItemData();
 	RandomContract.RequestedItemColor = *ItemProperties->GetRandomColor();
@@ -57,7 +73,7 @@ void UContractSystemComponent::Server_GenerateRandomContract()
 	RandomContract.RewardAmount = RandomContract.RequestedItemData.CostAmount * RewardMultiplier;
 	
 	AvailableContracts.Add(RandomContract);
-	OnContractListChanged.Broadcast(AvailableContracts);
+	OnRep_AvailableContracts();
 	Server_HandleGenerateContractTimer();
 }
 
@@ -69,14 +85,10 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 		{
 			World->GetTimerManager().ClearTimer(GenerateContractTimerHandle);
 		}
-	}
-}
-
-void UContractSystemComponent::Server_StartGenerateContractTimer()
-{
-	if (UWorld* World = GetWorld())
-	{
-		World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
+		else if (AvailableContracts.Num() < MaxContractAmount && !World->GetTimerManager().IsTimerActive(GenerateContractTimerHandle))
+		{
+			World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
+		}
 	}
 }
 
@@ -84,5 +96,3 @@ void UContractSystemComponent::OnRep_AvailableContracts()
 {
 	OnContractListChanged.Broadcast(AvailableContracts);
 }
-
-

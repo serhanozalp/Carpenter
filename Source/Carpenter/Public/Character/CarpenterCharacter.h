@@ -20,8 +20,9 @@ public:
 
 	ACarpenterCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	bool Server_PickupItem(ACarpenterItem* ItemToPickUp);
+	float Server_SellItem(UContractSystemComponent* ContractSystemComponent);
+	FORCEINLINE ACarpenterItem* GetCarriedCarpenterItem() const { return CarriedCarpenterItem; }
 
 private:
 

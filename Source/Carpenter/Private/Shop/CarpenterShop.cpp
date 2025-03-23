@@ -2,10 +2,14 @@
 
 #include "Shop/CarpenterShop.h"
 
+#include "Carpenter/DebugHelper.h"
+#include "Character/CarpenterCharacter.h"
 #include "Components/ContractSystemComponent.h"
 #include "Components/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Shop/Items/CarpenterItem.h"
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
+#include "Shop/Workbenches/Buttons/CarpenterWorkshopButtonBase.h"
 #include "Widgets/CarpenterWidgetContractsHolder.h"
 #include "Widgets/Shop/CarpenterWidgetResources.h"
 
@@ -34,6 +38,9 @@ ACarpenterShop::ACarpenterShop()
 	ResourceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Resource Widget Component"));
 	ResourceWidgetComponent->SetupAttachment(GetRootComponent());
 	ResourceWidgetComponent->SetDrawAtDesiredSize(true);
+
+	SellZone = CreateDefaultSubobject<UChildActorComponent>(TEXT("Sell Zone"));
+	SellZone->SetupAttachment(GetRootComponent());
 
 	ChipperWorkbench = CreateDefaultSubobject<UChildActorComponent>(TEXT("Chipper Workbench"));
 	ChipperWorkbench->SetupAttachment(GetRootComponent());
@@ -84,6 +91,31 @@ void ACarpenterShop::Server_Initialize()
 		if (ACarpenterWorkbenchChipper* WorkbenchChipper = Cast<ACarpenterWorkbenchChipper>(ChildActor))
 		{
 			WorkbenchChipper->Server_Initialize();
+		}
+	}
+
+	if (AActor* ChildActor = SellZone->GetChildActor())
+	{
+		if (ACarpenterWorkshopButtonBase* SellZoneButton = Cast<ACarpenterWorkshopButtonBase>(ChildActor))
+		{
+			SellZoneButton->OnButtonInteracted.AddDynamic(this, &ACarpenterShop::Server_OnSellZoneButtonClicked);
+		}
+	}
+}
+
+void ACarpenterShop::Server_OnSellZoneButtonClicked(APawn* InteractorPawn)
+{
+	if (!InteractorPawn)
+	{
+		return;
+	}
+	
+	if (ACarpenterCharacter* CarpenterCharacter = Cast<ACarpenterCharacter>(InteractorPawn))
+	{
+		float RewardAmount = CarpenterCharacter->Server_SellItem(ContractSystemComponent);
+		if (RewardAmount > 0.0f)
+		{
+			ResourceSystemComponent->Server_TryMoneyAmountChange(RewardAmount);
 		}
 	}
 }

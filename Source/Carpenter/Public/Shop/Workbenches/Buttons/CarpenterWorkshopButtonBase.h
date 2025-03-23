@@ -8,7 +8,7 @@
 #include "CarpenterWorkshopButtonBase.generated.h"
 
 class ACarpenterWorkbenchBase;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonInteracted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnButtonInteracted, APawn*, InteractorPawn);
 
 UCLASS()
 class CARPENTER_API ACarpenterWorkshopButtonBase : public AActor, public IInteractable
@@ -18,7 +18,7 @@ class CARPENTER_API ACarpenterWorkshopButtonBase : public AActor, public IIntera
 public:
 
 	//PROPERTY
-	UPROPERTY(BlueprintAssignable, Category = "Custom|Delegates")
+
 	FOnButtonInteracted OnButtonInteracted;
 	
 	//METHOD

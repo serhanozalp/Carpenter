@@ -22,10 +22,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Interact(APawn* InteractorPawn) override;
 	virtual void EnableOutline(bool bShouldEnable) override;
-
+	
 	void Server_SetItemMesh(UStaticMesh* InItemMesh);
 	void Server_SetItemState(ECarpenterItemState InItemState);
 	void Server_SetAttachedWorkbench(ACarpenterWorkbenchBase* Workbench);
+	FORCEINLINE UStaticMesh* GetItemMesh() const { return ItemMeshComponent->GetStaticMesh(); }
 
 private:
 
