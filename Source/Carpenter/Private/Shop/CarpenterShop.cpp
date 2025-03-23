@@ -7,10 +7,9 @@
 #include "Components/ContractSystemComponent.h"
 #include "Components/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Shop/Items/CarpenterItem.h"
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
 #include "Shop/Workbenches/Buttons/CarpenterWorkshopButtonBase.h"
-#include "Widgets/CarpenterWidgetContractsHolder.h"
+#include "Widgets/Shop/CarpenterWidgetContractsHolder.h"
 #include "Widgets/Shop/CarpenterWidgetResources.h"
 
 

@@ -1,12 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Widgets/CarpenterWidgetContractsHolder.h"
+#include "Widgets/Shop/CarpenterWidgetContractsHolder.h"
 
 #include "Carpenter/DebugHelper.h"
 #include "Components/ContractSystemComponent.h"
 #include "Components/HorizontalBox.h"
-#include "Widgets/CarpenterWidgetContract.h"
+#include "Widgets/Shop/CarpenterWidgetContract.h"
 
 void UCarpenterWidgetContractsHolder::SetupOnContractListChangedDelegate(UContractSystemComponent* ContractSystemComponent)
 {
@@ -33,7 +33,3 @@ void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpen
 		}
 	}
 }
-
-
-
-
