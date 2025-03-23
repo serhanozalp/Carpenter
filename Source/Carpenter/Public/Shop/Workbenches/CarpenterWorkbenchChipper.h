@@ -58,7 +58,7 @@ private:
 	UFUNCTION()
 	void OnRep_SelectedItemIndex();
 	
-	void Server_SetSelectedItemIndex(int32 ItemIndex);
+	void Server_SetSelectedItemIndex(int32 NewItemIndex);
 
 	void HandleItemDisplayWidget();
 

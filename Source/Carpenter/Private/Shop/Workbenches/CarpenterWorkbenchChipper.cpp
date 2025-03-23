@@ -6,6 +6,7 @@
 #include "Carpenter/DebugHelper.h"
 #include "CarpenterTypes/CarpenterEnumTypes.h"
 #include "Components/ContractSystemComponent.h"
+#include "Components/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "DataAssets/DataAsset_ItemProperties.h"
 #include "Net/UnrealNetwork.h"
@@ -49,13 +50,15 @@ void ACarpenterWorkbenchChipper::BeginPlay()
 
 void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked()
 {
-	SelectedItemIndex = FMath::Clamp(SelectedItemIndex-1, 0, CarpenterItemDataList.Num() - 1);
+	Server_SetSelectedItemIndex(--SelectedItemIndex);
+	//SelectedItemIndex = FMath::Clamp(SelectedItemIndex-1, 0, CarpenterItemDataList.Num() - 1);
 	HandleItemDisplayWidget();
 }
 
 void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked()
 {
-	SelectedItemIndex = FMath::Clamp(SelectedItemIndex+  1, 0, CarpenterItemDataList.Num() - 1);
+	Server_SetSelectedItemIndex(++SelectedItemIndex);
+	//SelectedItemIndex = FMath::Clamp(SelectedItemIndex+  1, 0, CarpenterItemDataList.Num() - 1);
 	HandleItemDisplayWidget();
 }
 
@@ -70,7 +73,12 @@ void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked()
 
 void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
 {
-	if (!bIsEmpty)
+	if (!bIsEmpty || CarpenterItemDataList.IsEmpty() || !OwningCarpenterShop->GetResourceSystemComponent())
+	{
+		return;
+	}
+	
+	if (!OwningCarpenterShop->GetResourceSystemComponent()->Server_TryMoneyAmountChange(-CarpenterItemDataList[SelectedItemIndex].CostAmount))
 	{
 		return;
 	}
@@ -112,9 +120,10 @@ void ACarpenterWorkbenchChipper::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME_CONDITION(ACarpenterWorkbenchChipper, CarpenterItemDataList, COND_InitialOnly);
 }
 
-void ACarpenterWorkbenchChipper::Server_SetSelectedItemIndex(int32 ItemIndex)
+void ACarpenterWorkbenchChipper::Server_SetSelectedItemIndex(int32 NewItemIndex)
 {
-	SelectedItemIndex = ItemIndex;
+	NewItemIndex = FMath::Clamp(NewItemIndex, 0, CarpenterItemDataList.Num() - 1);
+	SelectedItemIndex = NewItemIndex;
 	HandleItemDisplayWidget();
 }
 

@@ -27,7 +27,6 @@ public:
 	//METHOD
 	
 	UContractSystemComponent();
-	virtual void BeginPlay() override;
 	virtual void Server_Initialize() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -52,6 +51,7 @@ private:
 
 	void Server_GenerateRandomContract();
 	void Server_HandleGenerateContractTimer();
+	void Server_StartGenerateContractTimer();
 	void Server_LoadItemPropertiesDataAsset();
 	
 	UFUNCTION()

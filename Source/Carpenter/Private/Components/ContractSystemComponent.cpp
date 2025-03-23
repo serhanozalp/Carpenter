@@ -12,22 +12,10 @@ UContractSystemComponent::UContractSystemComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UContractSystemComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	if (UWorld* World = GetWorld())
-	{
-		if (GetOwner()->HasAuthority())
-		{
-			World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
-		}
-	}
-}
-
 void UContractSystemComponent::Server_Initialize()
 {
 	Server_LoadItemPropertiesDataAsset();
+	Server_StartGenerateContractTimer();
 }
 
 void UContractSystemComponent::Server_LoadItemPropertiesDataAsset()
@@ -84,9 +72,16 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 	}
 }
 
+void UContractSystemComponent::Server_StartGenerateContractTimer()
+{
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
+	}
+}
+
 void UContractSystemComponent::OnRep_AvailableContracts()
 {
-	//Debug::Print(FString::Printf(TEXT("AvailableContracts: %d"), AvailableContracts.Num()));
 	OnContractListChanged.Broadcast(AvailableContracts);
 }
 

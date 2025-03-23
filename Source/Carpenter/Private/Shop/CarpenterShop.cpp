@@ -3,9 +3,11 @@
 #include "Shop/CarpenterShop.h"
 
 #include "Components/ContractSystemComponent.h"
+#include "Components/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
 #include "Widgets/CarpenterWidgetContractsHolder.h"
+#include "Widgets/Shop/CarpenterWidgetResources.h"
 
 
 ACarpenterShop::ACarpenterShop()
@@ -13,15 +15,25 @@ ACarpenterShop::ACarpenterShop()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
+	
 	ShopMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shop Mesh"));
-	SetRootComponent(ShopMesh);
+	ShopMesh->SetupAttachment(GetRootComponent());
 	
 	ContractSystemComponent = CreateDefaultSubobject<UContractSystemComponent>(TEXT("Contract System Component"));
 	ContractSystemComponent->SetIsReplicated(true);
 
-	AvailableContractsWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Available Contracts Widget"));
-	AvailableContractsWidget->SetupAttachment(GetRootComponent());
-	AvailableContractsWidget->SetDrawAtDesiredSize(true);
+	ResourceSystemComponent =CreateDefaultSubobject<UResourceSystemComponent>(TEXT("Resource System Component"));
+	ResourceSystemComponent->SetIsReplicated(true);
+
+	AvailableContractsWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Available Contracts Widget"));
+	AvailableContractsWidgetComponent->SetupAttachment(GetRootComponent());
+	AvailableContractsWidgetComponent->SetDrawAtDesiredSize(true);
+
+	ResourceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Resource Widget Component"));
+	ResourceWidgetComponent->SetupAttachment(GetRootComponent());
+	ResourceWidgetComponent->SetDrawAtDesiredSize(true);
 
 	ChipperWorkbench = CreateDefaultSubobject<UChildActorComponent>(TEXT("Chipper Workbench"));
 	ChipperWorkbench->SetupAttachment(GetRootComponent());
@@ -33,11 +45,19 @@ void ACarpenterShop::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AvailableContractsWidget)
+	if (AvailableContractsWidgetComponent)
 	{
-		if (UCarpenterWidgetContractsHolder* ContractsHolderWidget = Cast<UCarpenterWidgetContractsHolder>(AvailableContractsWidget->GetWidget()))
+		if (UCarpenterWidgetContractsHolder* ContractsHolderWidget = Cast<UCarpenterWidgetContractsHolder>(AvailableContractsWidgetComponent->GetWidget()))
 		{
 			ContractsHolderWidget->SetupOnContractListChangedDelegate(ContractSystemComponent);
+		}
+	}
+
+	if (ResourceWidgetComponent)
+	{
+		if (UCarpenterWidgetResources* ResourcesWidget = Cast<UCarpenterWidgetResources>(ResourceWidgetComponent->GetWidget()))
+		{
+			ResourcesWidget->SetupOnResourcesChangedDelegate(ResourceSystemComponent);
 		}
 	}
 	
@@ -52,6 +72,11 @@ void ACarpenterShop::Server_Initialize()
 	if (ContractSystemComponent)
 	{
 		ContractSystemComponent->Server_Initialize();
+	}
+
+	if (ResourceSystemComponent)
+	{
+		ResourceSystemComponent->Server_Initialize();
 	}
 	
 	if (AActor* ChildActor = ChipperWorkbench->GetChildActor())

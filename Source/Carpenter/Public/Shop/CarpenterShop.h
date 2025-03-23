@@ -7,6 +7,7 @@
 #include "Interfaces/ServerInitialize.h"
 #include "CarpenterShop.generated.h"
 
+class UResourceSystemComponent;
 class UWidgetComponent;
 class UContractSystemComponent;
 
@@ -19,6 +20,7 @@ public:
 
 	ACarpenterShop();
 	FORCEINLINE UContractSystemComponent* GetContractSystemComponent() const { return ContractSystemComponent; }
+	FORCEINLINE UResourceSystemComponent* GetResourceSystemComponent() const { return ResourceSystemComponent; }
 	virtual void Server_Initialize() override;
 
 protected:
@@ -28,6 +30,9 @@ protected:
 private:
 	
 	//PROPERTY
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> Root;
 	
 	UPROPERTY(VisibleAnywhere , Category = "Custom|Components")
 	TObjectPtr<UStaticMeshComponent> ShopMesh;
@@ -36,7 +41,13 @@ private:
 	TObjectPtr<UContractSystemComponent> ContractSystemComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
-	TObjectPtr<UWidgetComponent> AvailableContractsWidget;
+	TObjectPtr<UResourceSystemComponent> ResourceSystemComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	TObjectPtr<UWidgetComponent> AvailableContractsWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	TObjectPtr<UWidgetComponent> ResourceWidgetComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UChildActorComponent> ChipperWorkbench;

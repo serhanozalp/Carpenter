@@ -11,7 +11,7 @@ void UCarpenterWidgetContract::SetContractData(const FCarpenterContractData& Con
 {
 	if (ItemMeshText && ItemColor)
 	{
-		ItemMeshText.Get()->SetText(FText::FromString(ContractData.RequestedItemData.Name));
-		ItemColor.Get()->SetColorAndOpacity(ContractData.RequestedItemColor);
+		ItemMeshText->SetText(FText::FromString(ContractData.RequestedItemData.Name));
+		ItemColor->SetColorAndOpacity(ContractData.RequestedItemColor);
 	}
 }
