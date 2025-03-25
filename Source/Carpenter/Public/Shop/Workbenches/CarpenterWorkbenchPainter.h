@@ -18,9 +18,12 @@ class CARPENTER_API ACarpenterWorkbenchPainter : public ACarpenterWorkbenchBase
 public:
 
 	ACarpenterWorkbenchPainter();
+	
 	virtual void Server_Initialize() override;
 
 protected:
+
+	virtual void BeginPlay() override;
 	
 	virtual void Server_BindWorkbenchButtonsDelegates() override;
 
@@ -28,18 +31,18 @@ private:
 
 	//PROPERTY
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Custom|CarpenterWorkbenchPainter|Components")
 	TObjectPtr<USceneComponent> PaintButtonsHolder;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchPainter|Components")
 	TObjectPtr<UChildActorComponent> AttachButtonComponent;
 
 	TArray<ACarpenterColorableButton*> PaintButtonList;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchPainter|Settings")
 	float PaintButtonOffset = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchPainter|Settings")
 	TSubclassOf<ACarpenterColorableButton> PaintButtonClass;
 
 	//METHOD

@@ -24,11 +24,6 @@ void UCarpenterWidgetContractsHolder::SetupOnContractListChangedDelegate(UContra
 
 void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpenterContractData>& AvailableContractList)
 {
-	if (!HorizontalBox)
-	{
-		return;
-	}
-	
 	HorizontalBox->ClearChildren();
 	for (const FCarpenterContractData& CarpenterContractData : AvailableContractList)
 	{

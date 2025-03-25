@@ -29,11 +29,11 @@ public:
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> ButtonMesh;
+	UPROPERTY(VisibleAnywhere, Category = "Custom|CarpenterButton|Components")
+	TObjectPtr<UStaticMeshComponent> ButtonMeshComponent;
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Materials")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterButton|Materials")
 	TObjectPtr<UMaterial> OverlayMaterial;
 };

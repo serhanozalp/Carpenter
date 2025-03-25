@@ -21,8 +21,8 @@ ACarpenterShop::ACarpenterShop()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	
-	ShopMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shop Mesh"));
-	ShopMesh->SetupAttachment(GetRootComponent());
+	ShopMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shop Mesh Component"));
+	ShopMeshComponent->SetupAttachment(GetRootComponent());
 	
 	ContractSystemComponent = CreateDefaultSubobject<UContractSystemComponent>(TEXT("Contract System Component"));
 	ContractSystemComponent->SetIsReplicated(true);
@@ -38,18 +38,34 @@ ACarpenterShop::ACarpenterShop()
 	ResourceWidgetComponent->SetupAttachment(GetRootComponent());
 	ResourceWidgetComponent->SetDrawAtDesiredSize(true);
 
-	SellZone = CreateDefaultSubobject<UChildActorComponent>(TEXT("Sell Zone"));
-	SellZone->SetupAttachment(GetRootComponent());
+	SellButtonComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Sell Zone"));
+	SellButtonComponent->SetupAttachment(GetRootComponent());
 
-	ChipperWorkbench = CreateDefaultSubobject<UChildActorComponent>(TEXT("Chipper Workbench"));
-	ChipperWorkbench->SetupAttachment(GetRootComponent());
-	PainterWorkbench = CreateDefaultSubobject<UChildActorComponent>(TEXT("Painter Workbench"));
-	PainterWorkbench->SetupAttachment(GetRootComponent());
+	ChipperWorkbenchComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Chipper Workbench"));
+	ChipperWorkbenchComponent->SetupAttachment(GetRootComponent());
+	PainterWorkbenchComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Painter Workbench"));
+	PainterWorkbenchComponent->SetupAttachment(GetRootComponent());
 }
 
 void ACarpenterShop::BeginPlay()
 {
 	Super::BeginPlay();
+
+	checkf(AvailableContractsWidgetComponent->GetWidget(), TEXT("Available Contract Widget Class is not set!"))
+	checkf(ResourceWidgetComponent->GetWidget(), TEXT("Resource Widget Class is not set!"))
+	checkf(SellButtonComponent->GetChildActor(), TEXT("Sell Button Component Class is not set!"))
+	checkf(ChipperWorkbenchComponent->GetChildActor(), TEXT("Chipper Workbench Component Class is not set!"))
+	checkf(PainterWorkbenchComponent->GetChildActor(), TEXT("Painter Workbench Component Class is not set!"))
+
+	if (ACarpenterWorkbenchBase* ChipperWorkbench = Cast<ACarpenterWorkbenchBase>(ChipperWorkbenchComponent->GetChildActor()))
+	{
+		ChipperWorkbench->SetOwningCarpenterShop(this);
+	}
+
+	if (ACarpenterWorkbenchBase* PainterWorkbench = Cast<ACarpenterWorkbenchBase>(PainterWorkbenchComponent->GetChildActor()))
+	{
+		PainterWorkbench->SetOwningCarpenterShop(this);
+	}
 
 	if (UCarpenterWidgetContractsHolder* ContractsHolderWidget = Cast<UCarpenterWidgetContractsHolder>(AvailableContractsWidgetComponent->GetWidget()))
 	{
@@ -70,43 +86,25 @@ void ACarpenterShop::BeginPlay()
 void ACarpenterShop::Server_Initialize()
 {
 	Server_LoadItemPropertiesDataAsset();
-		
-	if (ContractSystemComponent)
-	{
-		ContractSystemComponent->Server_Initialize();
-	}
 
-	if (ResourceSystemComponent)
-	{
-		ResourceSystemComponent->Server_Initialize();
-	}
-	
-	if (AActor* ChildActor = ChipperWorkbench->GetChildActor())
-	{
-		if (ACarpenterWorkbenchChipper* WorkbenchChipper = Cast<ACarpenterWorkbenchChipper>(ChildActor))
-		{
-			WorkbenchChipper->Server_Initialize();
-		}
-	}
+	ContractSystemComponent->Server_Initialize();
+	ResourceSystemComponent->Server_Initialize();
 
-	if (AActor* ChildActor = PainterWorkbench->GetChildActor())
+	if (ACarpenterWorkbenchChipper* WorkbenchChipper = Cast<ACarpenterWorkbenchChipper>(ChipperWorkbenchComponent->GetChildActor()))
 	{
-		if (ACarpenterWorkbenchPainter* WorkbenchPainter = Cast<ACarpenterWorkbenchPainter>(ChildActor))
-		{
-			WorkbenchPainter->Server_Initialize();
-		}
+		WorkbenchChipper->Server_Initialize();
 	}
-
-	if (AActor* ChildActor = SellZone->GetChildActor())
+	if (ACarpenterWorkbenchPainter* WorkbenchPainter = Cast<ACarpenterWorkbenchPainter>(PainterWorkbenchComponent->GetChildActor()))
 	{
-		if (ACarpenterButton* SellZoneButton = Cast<ACarpenterButton>(ChildActor))
-		{
-			SellZoneButton->OnButtonInteracted.AddDynamic(this, &ACarpenterShop::Server_OnSellZoneButtonClicked);
-		}
+		WorkbenchPainter->Server_Initialize();
+	}
+	if (ACarpenterButton* SellButton = Cast<ACarpenterButton>(SellButtonComponent->GetChildActor()))
+	{
+		SellButton->OnButtonInteracted.AddDynamic(this, &ACarpenterShop::Server_OnSellButtonClicked);
 	}
 }
 
-void ACarpenterShop::Server_OnSellZoneButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
+void ACarpenterShop::Server_OnSellButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
 	if (!InteractorCharacter)
 	{

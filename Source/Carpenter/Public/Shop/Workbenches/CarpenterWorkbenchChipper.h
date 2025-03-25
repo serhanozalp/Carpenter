@@ -20,45 +20,51 @@ class CARPENTER_API ACarpenterWorkbenchChipper : public ACarpenterWorkbenchBase
 public:
 
 	ACarpenterWorkbenchChipper();
-	virtual void Server_Initialize() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	virtual void Server_Initialize() override;
 	
 protected:
 	
 	virtual void BeginPlay() override;
+	
 	virtual void Server_BindWorkbenchButtonsDelegates() override;
 	
 private:
 
 	//PROPERTY
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchChipper|Components")
 	TObjectPtr<UChildActorComponent> LeftButtonComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchChipper|Components")
 	TObjectPtr<UChildActorComponent> RightButtonComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchChipper|Components")
 	TObjectPtr<UChildActorComponent> BuildButtonComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchChipper|Components")
 	TObjectPtr<UWidgetComponent> ItemDisplayWidgetComponent;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_CarpenterItemDataList)
 	TArray<FCarpenterItemData> CarpenterItemDataList;
 
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedItemIndex)
 	int32 SelectedItemIndex;
 
+	UPROPERTY()
 	TObjectPtr<UCarpenterWidgetChipperDisplay> CachedItemDisplayWidget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWorkbenchChipper|Settings")
 	TSubclassOf<ACarpenterItem> CarpenterItemClass;
 
 	//METHOD
 
 	UFUNCTION()
 	void OnRep_SelectedItemIndex();
+
+	UFUNCTION()
+	void OnRep_CarpenterItemDataList();
 	
 	void Server_SetSelectedItemIndex(int32 NewItemIndex);
 

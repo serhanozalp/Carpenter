@@ -8,8 +8,8 @@ ACarpenterButton::ACarpenterButton()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	
-	ButtonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Button Mesh"));
-	SetRootComponent(ButtonMesh);
+	ButtonMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Button Mesh Component"));
+	SetRootComponent(ButtonMeshComponent);
 }
 
 void ACarpenterButton::Interact(ACarpenterCharacter* InteractorCharacter)
@@ -19,13 +19,13 @@ void ACarpenterButton::Interact(ACarpenterCharacter* InteractorCharacter)
 
 void ACarpenterButton::EnableOutline(bool bShouldEnable)
 {
-	if (!ButtonMesh || !OverlayMaterial)
+	if (!OverlayMaterial)
 	{
 		return;
 	}
 
 	UMaterial* Material = bShouldEnable ? OverlayMaterial : nullptr;
-	ButtonMesh->SetOverlayMaterial(Material);
+	ButtonMeshComponent->SetOverlayMaterial(Material);
 }
 
 

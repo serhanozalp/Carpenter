@@ -4,7 +4,6 @@
 #include "Shop/Items/CarpenterItem.h"
 
 #include "CarpenterFunctionLibrary.h"
-#include "Carpenter/DebugHelper.h"
 #include "CarpenterTypes/CarpenterEnumTypes.h"
 #include "Character/CarpenterCharacter.h"
 #include "Net/UnrealNetwork.h"
@@ -17,6 +16,7 @@ ACarpenterItem::ACarpenterItem()
 	
 	ItemMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item Mesh"));
 	SetRootComponent(ItemMeshComponent);
+	
 	ItemMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	ItemMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -49,10 +49,10 @@ void ACarpenterItem::EnableOutline(bool bShouldEnable)
 	}
 }
 
-void ACarpenterItem::Server_SetItemMesh(UStaticMesh* InItemMesh)
+void ACarpenterItem::Server_SetItemMesh(UStaticMesh* ItemMesh)
 {
-	ItemMeshComponent->SetStaticMesh(InItemMesh);
-	ItemMeshToApply = InItemMesh;
+	ItemMeshComponent->SetStaticMesh(ItemMesh);
+	ItemMeshToApply = ItemMesh;
 }
 
 void ACarpenterItem::Server_SetItemColor(const FVector& ColorVector)
@@ -72,7 +72,7 @@ void ACarpenterItem::Server_SetItemState(ECarpenterItemState InItemState)
 
 void ACarpenterItem::Server_SetAttachedWorkbench(ACarpenterWorkbenchBase* Workbench)
 {
-	if (!Workbench)
+	if (!Workbench && AttachedWorkBench)
 	{
 		AttachedWorkBench->Server_SetAttachedCarpenterItem(nullptr);
 	}

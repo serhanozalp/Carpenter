@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ContentBrowserDataSource.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "CarpenterItem.generated.h"
@@ -24,7 +23,7 @@ public:
 	virtual void Interact(ACarpenterCharacter* InteractorCharacter) override;
 	virtual void EnableOutline(bool bShouldEnable) override;
 	
-	void Server_SetItemMesh(UStaticMesh* InItemMesh);
+	void Server_SetItemMesh(UStaticMesh* ItemMesh);
 	void Server_SetItemColor(const FVector& ColorVector);
 	void Server_SetItemState(ECarpenterItemState InItemState);
 	void Server_SetAttachedWorkbench(ACarpenterWorkbenchBase* Workbench);

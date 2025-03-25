@@ -25,5 +25,8 @@ private:
 	TObjectPtr<UTextBlock> ItemMeshText;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> RewardAmountText;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ItemColor;
 };

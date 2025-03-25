@@ -18,10 +18,11 @@ class CARPENTER_API ACarpenterWorkbenchBase : public AActor, public IServerIniti
 public:
 	
 	ACarpenterWorkbenchBase();
+	
 	virtual void Server_Initialize() override;
 	void Server_SetAttachedCarpenterItem(ACarpenterItem* CarpenterItemToAttach);
-	FORCEINLINE bool IsEmpty() const { return AttachedCarpenterItem == nullptr; }
-	FORCEINLINE USceneComponent* GetItemHolderComponent() const { return ItemHolderComponent; }
+
+	void SetOwningCarpenterShop(ACarpenterShop* CarpenterShop);
 	
 protected:
 
@@ -30,7 +31,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ACarpenterShop> OwningCarpenterShop;
 
-	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	UPROPERTY(VisibleAnywhere, Category = "Custom|CarpenterWorkbenchBase|Components")
 	TObjectPtr<USceneComponent> ItemHolderComponent;
 
 	UPROPERTY()
@@ -38,10 +39,11 @@ protected:
 
 	//METHOD
 	
-	UFUNCTION(BlueprintCallable, DisplayName = "Set Owning Shop")
-	void SetOwningCarpenterShop(ACarpenterShop* CarpenterShop);
+	
 
 	virtual void Server_BindWorkbenchButtonsDelegates();
+
+	bool IsEmpty() const { return AttachedCarpenterItem == nullptr; }
 
 private:
 
@@ -50,6 +52,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Root;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	UPROPERTY(VisibleAnywhere, Category = "Custom|CarpenterWorkbenchBase|Components")
 	TObjectPtr<UStaticMeshComponent> WorkbenchMesh;
 };

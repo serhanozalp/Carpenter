@@ -3,7 +3,6 @@
 
 #include "Shop/Workbenches/CarpenterWorkbenchPainter.h"
 
-#include "Carpenter/DebugHelper.h"
 #include "Character/CarpenterCharacter.h"
 #include "DataAssets/DataAsset_ItemProperties.h"
 #include "Shop/CarpenterShop.h"
@@ -21,6 +20,14 @@ ACarpenterWorkbenchPainter::ACarpenterWorkbenchPainter()
 	AttachButtonComponent->SetupAttachment(GetRootComponent());
 }
 
+void ACarpenterWorkbenchPainter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	checkf(IsValid(PaintButtonClass), TEXT("Paint Button Class is not set!"))
+	checkf(AttachButtonComponent->GetChildActor(), TEXT("Attach Button Component Class is not set"))
+}
+
 void ACarpenterWorkbenchPainter::Server_Initialize() 
 {
 	Server_GeneratePaintButtons();
@@ -29,13 +36,11 @@ void ACarpenterWorkbenchPainter::Server_Initialize()
 
 void ACarpenterWorkbenchPainter::Server_BindWorkbenchButtonsDelegates()
 {
-	if (AActor* ChildActor = AttachButtonComponent->GetChildActor())
+	if (ACarpenterButton* AttachButton = Cast<ACarpenterButton>(AttachButtonComponent->GetChildActor()))
 	{
-		if (ACarpenterButton* AttachButton = Cast<ACarpenterButton>(ChildActor))
-		{
-			AttachButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchPainter::Server_OnAttachButtonClicked);
-		}
+		AttachButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchPainter::Server_OnAttachButtonClicked);
 	}
+	
 	for (ACarpenterColorableButton* PaintButton : PaintButtonList)
 	{
 		PaintButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchPainter::Server_OnPaintButtonClicked);

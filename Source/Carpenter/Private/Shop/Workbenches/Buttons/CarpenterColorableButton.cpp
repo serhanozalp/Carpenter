@@ -27,6 +27,6 @@ void ACarpenterColorableButton::Server_SetColorVectorToApply(const FVector& Colo
 
 void ACarpenterColorableButton::OnRep_ColorVectorToApply()
 {
-	UCarpenterFunctionLibrary::NativeColorMeshComponent(ButtonMesh, FName("ColorParameter"), ColorVectorToApply, 0);
+	UCarpenterFunctionLibrary::NativeColorMeshComponent(ButtonMeshComponent, FName("ColorParameter"), ColorVectorToApply, 0);
 }
 

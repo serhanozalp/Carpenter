@@ -15,7 +15,9 @@ public:
 	
 	ACarpenterColorableButton();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	void Server_SetColorVectorToApply(const FVector& ColorVector);
+	
 	FORCEINLINE FVector GetColorVector() const { return ColorVectorToApply; }
 
 private:

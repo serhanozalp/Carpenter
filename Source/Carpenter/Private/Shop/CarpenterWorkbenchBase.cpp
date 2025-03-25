@@ -27,11 +27,6 @@ void ACarpenterWorkbenchBase::Server_Initialize()
 
 void ACarpenterWorkbenchBase::Server_SetAttachedCarpenterItem(ACarpenterItem* CarpenterItemToAttach)
 {
-	if (!ItemHolderComponent)
-	{
-		return;
-	}
-
 	AttachedCarpenterItem = CarpenterItemToAttach;
 	
 	if (!AttachedCarpenterItem)

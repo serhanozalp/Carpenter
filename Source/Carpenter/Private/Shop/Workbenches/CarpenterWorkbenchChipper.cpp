@@ -3,7 +3,6 @@
 
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
 
-#include "Carpenter/DebugHelper.h"
 #include "Components/Shop/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "DataAssets/DataAsset_ItemProperties.h"
@@ -35,11 +34,36 @@ ACarpenterWorkbenchChipper::ACarpenterWorkbenchChipper()
 void ACarpenterWorkbenchChipper::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (!HasAuthority())
+
+	checkf(IsValid(CarpenterItemClass), TEXT("Carpenter Item Class is not set!"))
+	checkf(LeftButtonComponent->GetChildActor(), TEXT("Left Button Component Class is not set!"))
+	checkf(RightButtonComponent->GetChildActor(), TEXT("Right Button Component Class is not set!"))
+	checkf(BuildButtonComponent->GetChildActor(), TEXT("Build Button Component Class is not set!"))
+	checkf(ItemDisplayWidgetComponent->GetWidget(), TEXT("Item Display Widget Class is not set!"))
+}
+
+void ACarpenterWorkbenchChipper::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACarpenterWorkbenchChipper, SelectedItemIndex);
+	DOREPLIFETIME_CONDITION(ACarpenterWorkbenchChipper, CarpenterItemDataList, COND_InitialOnly);
+}
+
+void ACarpenterWorkbenchChipper::Server_Initialize()
+{
+	if (!OwningCarpenterShop)
 	{
-		OnRep_SelectedItemIndex();
+		return;
 	}
+
+	if (UDataAsset_ItemProperties* ItemPropertiesDataAsset = OwningCarpenterShop->GetItemPropertiesDataAsset())
+	{
+		CarpenterItemDataList = ItemPropertiesDataAsset->CarpenterItemDataList;
+	}
+
+	Server_BindWorkbenchButtonsDelegates();
+	Server_SetSelectedItemIndex(0);
 }
 
 void ACarpenterWorkbenchChipper::Server_BindWorkbenchButtonsDelegates()
@@ -72,21 +96,17 @@ void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked(ACarpenterCharacter
 
 void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
-	if (!CarpenterItemClass)
+	if (!IsEmpty())
 	{
 		return;
 	}
+	
 	Server_HandleItemBuild();
 }
 
 void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
 {
-	if (!IsEmpty() || CarpenterItemDataList.IsEmpty() || !OwningCarpenterShop->GetResourceSystemComponent())
-	{
-		return;
-	}
-	
-	if (!OwningCarpenterShop->GetResourceSystemComponent()->Server_TryMoneyAmountChange(-CarpenterItemDataList[SelectedItemIndex].CostAmount))
+	if (!OwningCarpenterShop->GetResourceSystemComponent()->Server_TryMoneyAmountChange(-CarpenterItemDataList[SelectedItemIndex].CostAmount) || !GetWorld())
 	{
 		return;
 	}
@@ -98,30 +118,6 @@ void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
 	}
 }
 
-void ACarpenterWorkbenchChipper::Server_Initialize()
-{
-	if (!OwningCarpenterShop)
-	{
-		return;
-	}
-
-	if (UDataAsset_ItemProperties* ItemPropertiesDataAsset = OwningCarpenterShop->GetItemPropertiesDataAsset())
-	{
-		CarpenterItemDataList = ItemPropertiesDataAsset->CarpenterItemDataList;
-	}
-
-	Server_BindWorkbenchButtonsDelegates();
-	Server_SetSelectedItemIndex(0);
-}
-
-void ACarpenterWorkbenchChipper::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ACarpenterWorkbenchChipper, SelectedItemIndex);
-	DOREPLIFETIME_CONDITION(ACarpenterWorkbenchChipper, CarpenterItemDataList, COND_InitialOnly);
-}
-
 void ACarpenterWorkbenchChipper::Server_SetSelectedItemIndex(int32 NewItemIndex)
 {
 	NewItemIndex = FMath::Clamp(NewItemIndex, 0, CarpenterItemDataList.Num() - 1);
@@ -131,12 +127,7 @@ void ACarpenterWorkbenchChipper::Server_SetSelectedItemIndex(int32 NewItemIndex)
 
 void ACarpenterWorkbenchChipper::HandleItemDisplayWidget()
 {
-	if (CarpenterItemDataList.IsEmpty())
-	{
-		return;
-	}
-
-	if (!CachedItemDisplayWidget && ItemDisplayWidgetComponent->GetWidget())
+	if (!CachedItemDisplayWidget)
 	{
 		CachedItemDisplayWidget = CastChecked<UCarpenterWidgetChipperDisplay>(ItemDisplayWidgetComponent->GetWidget());
 	}
@@ -150,4 +141,9 @@ void ACarpenterWorkbenchChipper::HandleItemDisplayWidget()
 void ACarpenterWorkbenchChipper::OnRep_SelectedItemIndex()
 {
 	HandleItemDisplayWidget();
+}
+
+void ACarpenterWorkbenchChipper::OnRep_CarpenterItemDataList()
+{
+	OnRep_SelectedItemIndex();
 }

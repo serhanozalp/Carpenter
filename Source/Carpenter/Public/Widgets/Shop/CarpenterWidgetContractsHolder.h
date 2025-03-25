@@ -30,6 +30,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> HorizontalBox;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterWidgetContractsHolder|Settings")
 	TSubclassOf<UCarpenterWidgetContract> ContractWidgetClass;
 };
