@@ -3,6 +3,7 @@
 
 #include "Shop/Workbenches/Buttons/CarpenterColorableButton.h"
 
+#include "CarpenterFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -26,16 +27,6 @@ void ACarpenterColorableButton::Server_SetColorVectorToApply(const FVector& Colo
 
 void ACarpenterColorableButton::OnRep_ColorVectorToApply()
 {
-	if (!ButtonMesh)
-	{
-		return;
-	}
-	
-	if (UMaterialInterface* CurrentMaterial = ButtonMesh->GetMaterial(0))
-	{
-		UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(CurrentMaterial, this);
-		DynamicMaterial->SetVectorParameterValue(FName("ColorParameter"), ColorVectorToApply);
-		ButtonMesh->SetMaterial(0, DynamicMaterial);
-	}
+	UCarpenterFunctionLibrary::NativeColorMeshComponent(ButtonMesh, FName("ColorParameter"), ColorVectorToApply, 0);
 }
 

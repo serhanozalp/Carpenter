@@ -3,6 +3,7 @@
 
 #include "Carpenter/Public/Character/CarpenterCharacter.h"
 
+#include "CarpenterFunctionLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "CarpenterTypes/CarpenterEnumTypes.h"
 #include "CarpenterTypes/CarpenterStructTypes.h"
@@ -70,6 +71,7 @@ float ACarpenterCharacter::Server_SellItem(UContractSystemComponent* ContractSys
 	
 	FCarpenterContractData ContractDataToCheck;
 	ContractDataToCheck.RequestedItemData.Mesh = CarriedCarpenterItem->GetItemMesh();
+	ContractDataToCheck.RequestedItemColor = UCarpenterFunctionLibrary::NativeConvertVectorToLinearColor(CarriedCarpenterItem->GetItemColorVector());
 	
 	if (CarriedCarpenterItem->Destroy())
 	{

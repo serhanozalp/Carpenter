@@ -67,6 +67,25 @@ void ACarpenterWorkbenchPainter::Server_GeneratePaintButtons()
 
 void ACarpenterWorkbenchPainter::Server_OnPaintButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
+	if (!AttachedCarpenterItem)
+	{
+		return;
+	}
+	
+	if (ACarpenterColorableButton * PaintButton = Cast<ACarpenterColorableButton>(InteractedButton))
+	{
+		Server_HandleCarpenterItemPaint(PaintButton->GetColorVector());
+	}
+}
+
+void ACarpenterWorkbenchPainter::Server_HandleCarpenterItemPaint(const FVector& ColorVectorToApply)
+{
+	if (AttachedCarpenterItem->GetItemColorVector() == ColorVectorToApply)
+	{
+		return;
+	}
+	
+	AttachedCarpenterItem->Server_SetItemColor(ColorVectorToApply);
 }
 
 void ACarpenterWorkbenchPainter::Server_OnAttachButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)

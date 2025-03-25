@@ -3,6 +3,7 @@
 
 #include "Components/Shop/ContractSystemComponent.h"
 
+#include "Carpenter/DebugHelper.h"
 #include "Net/UnrealNetwork.h"
 #include "Shop/CarpenterShop.h"
 
@@ -40,18 +41,37 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 
 float UContractSystemComponent::Server_CompleteContract(const FCarpenterContractData& ContractToCheck)
 {
+	float RewardMultiplier = 0.0f;
+	int32 ContractToCompleteIndex = -1;
+	
 	for (int32 i = 0; i < AvailableContractList.Num(); i++)
 	{
-		if (ContractToCheck.RequestedItemData.Mesh == AvailableContractList[i].RequestedItemData.Mesh)
+		if (ContractToCheck.RequestedItemData.Mesh != AvailableContractList[i].RequestedItemData.Mesh)
 		{
-			float RewardAmount = AvailableContractList[i].RewardAmount * 0.5;
-			AvailableContractList.RemoveAt(i);
-			OnRep_AvailableContractList();
-			Server_HandleGenerateContractTimer();
-			return RewardAmount;
+			continue;
+		}
+
+		RewardMultiplier = 0.5;
+		ContractToCompleteIndex = i;
+
+		if (ContractToCheck.RequestedItemColor == AvailableContractList[i].RequestedItemColor)
+		{
+			RewardMultiplier = 1.0f;
+			ContractToCompleteIndex = i;
+			break;
 		}
 	}
-	return 0.0f;
+
+	if (ContractToCompleteIndex == -1)
+	{
+		return 0.0f;
+	}
+
+	float RewardAmount = AvailableContractList[ContractToCompleteIndex].RewardAmount * RewardMultiplier;
+	AvailableContractList.RemoveAt(ContractToCompleteIndex);
+	OnRep_AvailableContractList();
+	Server_HandleGenerateContractTimer();
+	return RewardAmount;
 }
 
 void UContractSystemComponent::Server_GenerateRandomContract()

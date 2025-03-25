@@ -28,15 +28,9 @@ public:
 	virtual void EnableOutline(bool bShouldEnable) override;
 
 protected:
-
-	//PROPERTY
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> ButtonMesh;
-
-	//METHOD
-	UFUNCTION(BlueprintCallable)
-	void SetStaticMesh(UStaticMesh* Mesh);
 
 private:
 

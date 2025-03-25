@@ -28,12 +28,4 @@ void ACarpenterButton::EnableOutline(bool bShouldEnable)
 	ButtonMesh->SetOverlayMaterial(Material);
 }
 
-void ACarpenterButton::SetStaticMesh(UStaticMesh* Mesh)
-{
-	if (ButtonMesh)
-	{
-		ButtonMesh->SetStaticMesh(Mesh);
-	}
-}
-
 

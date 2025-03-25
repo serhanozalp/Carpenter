@@ -3,6 +3,7 @@
 
 #include "Shop/Items/CarpenterItem.h"
 
+#include "CarpenterFunctionLibrary.h"
 #include "Carpenter/DebugHelper.h"
 #include "CarpenterTypes/CarpenterEnumTypes.h"
 #include "Character/CarpenterCharacter.h"
@@ -26,6 +27,7 @@ void ACarpenterItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(ACarpenterItem, ItemState);
 	DOREPLIFETIME_CONDITION(ACarpenterItem, ItemMeshToApply, COND_InitialOnly);
+	DOREPLIFETIME(ACarpenterItem, ColorVectorToApply);
 }
 
 void ACarpenterItem::Interact(ACarpenterCharacter* InteractorCharacter)
@@ -49,11 +51,14 @@ void ACarpenterItem::EnableOutline(bool bShouldEnable)
 
 void ACarpenterItem::Server_SetItemMesh(UStaticMesh* InItemMesh)
 {
-	if (InItemMesh)
-	{
-		ItemMeshComponent->SetStaticMesh(InItemMesh);
-		ItemMeshToApply = InItemMesh;
-	}
+	ItemMeshComponent->SetStaticMesh(InItemMesh);
+	ItemMeshToApply = InItemMesh;
+}
+
+void ACarpenterItem::Server_SetItemColor(const FVector& ColorVector)
+{
+	ColorVectorToApply = ColorVector;
+	OnRep_ColorVectorToApply();
 }
 
 void ACarpenterItem::Server_SetItemState(ECarpenterItemState InItemState)
@@ -81,6 +86,11 @@ void ACarpenterItem::OnRep_ItemMeshToApply()
 	{
 		ItemMeshComponent->SetStaticMesh(ItemMeshToApply);
 	}
+}
+
+void ACarpenterItem::OnRep_ColorVectorToApply()
+{
+	UCarpenterFunctionLibrary::NativeColorMeshComponent(ItemMeshComponent, FName("ColorParameter"), ColorVectorToApply, 0);
 }
 
 void ACarpenterItem::OnRep_ItemState()

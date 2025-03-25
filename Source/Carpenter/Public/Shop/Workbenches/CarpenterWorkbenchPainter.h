@@ -51,4 +51,6 @@ private:
 
 	UFUNCTION()
 	void Server_OnAttachButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
+
+	void Server_HandleCarpenterItemPaint(const FVector& ColorVectorToApply);
 };
