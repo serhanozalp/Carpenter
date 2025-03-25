@@ -14,13 +14,18 @@ class CARPENTER_API UDataAsset_ItemProperties : public UDataAsset
 
 public:
 
-	FCarpenterItemData* GetRandomItemData();
-	FColor* GetRandomColor();
-	FORCEINLINE bool IsValid() const { return CarpenterItemDataList.Num() > 0 && ColorList.Num() > 0; }
+	//PROPERTY
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
 	TArray<FCarpenterItemData> CarpenterItemDataList;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
-	TArray<FColor> ColorList;
+	TArray<FLinearColor> ColorList;
+	
+	//METHOD
+	
+	FCarpenterItemData* GetRandomItemData();
+	FLinearColor* GetRandomColor();
+
+	FORCEINLINE bool IsValid() const { return CarpenterItemDataList.Num() > 0 && ColorList.Num() > 0; }
 };

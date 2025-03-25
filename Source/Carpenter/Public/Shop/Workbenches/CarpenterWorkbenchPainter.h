@@ -3,8 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Buttons/CarpenterButton.h"
 #include "Shop/CarpenterWorkbenchBase.h"
 #include "CarpenterWorkbenchPainter.generated.h"
+
+class ACarpenterItem;
+class ACarpenterColorableButton;
 
 UCLASS()
 class CARPENTER_API ACarpenterWorkbenchPainter : public ACarpenterWorkbenchBase
@@ -14,4 +18,37 @@ class CARPENTER_API ACarpenterWorkbenchPainter : public ACarpenterWorkbenchBase
 public:
 
 	ACarpenterWorkbenchPainter();
+	virtual void Server_Initialize() override;
+
+protected:
+	
+	virtual void Server_BindWorkbenchButtonsDelegates() override;
+
+private:
+
+	//PROPERTY
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> PaintButtonsHolder;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
+	TObjectPtr<UChildActorComponent> AttachButtonComponent;
+
+	TArray<ACarpenterColorableButton*> PaintButtonList;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	float PaintButtonOffset = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	TSubclassOf<ACarpenterColorableButton> PaintButtonClass;
+
+	//METHOD
+
+	void Server_GeneratePaintButtons();
+
+	UFUNCTION()
+	void Server_OnPaintButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
+
+	UFUNCTION()
+	void Server_OnAttachButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
 };

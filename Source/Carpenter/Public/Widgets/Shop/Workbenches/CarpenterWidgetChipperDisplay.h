@@ -7,9 +7,7 @@
 #include "CarpenterWidgetChipperDisplay.generated.h"
 
 class UTextBlock;
-/**
- * 
- */
+
 UCLASS()
 class CARPENTER_API UCarpenterWidgetChipperDisplay : public UUserWidget
 {

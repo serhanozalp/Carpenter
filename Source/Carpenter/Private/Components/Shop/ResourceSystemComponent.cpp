@@ -1,9 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Components/ResourceSystemComponent.h"
+#include "Components/Shop/ResourceSystemComponent.h"
 
-#include "Carpenter/DebugHelper.h"
 #include "Net/UnrealNetwork.h"
 
 UResourceSystemComponent::UResourceSystemComponent()
@@ -17,14 +16,14 @@ void UResourceSystemComponent::BeginPlay()
 	
 	if (!GetOwner()->HasAuthority())
 	{
-		OnRep_MoneyAmount();
+		OnRep_RemainingMoneyAmount();
 	}
 }
 
 void UResourceSystemComponent::Server_Initialize()
 {
 	RemainingMoneyAmount = StartingMoneyAmount;
-	OnRep_MoneyAmount();
+	OnRep_RemainingMoneyAmount();
 }
 
 void UResourceSystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -42,11 +41,11 @@ bool UResourceSystemComponent::Server_TryMoneyAmountChange(float ChangeAmount)
 		return false;
 	}
 	RemainingMoneyAmount = NewMoneyAmount;
-	OnMoneyAmountChanged.Broadcast(RemainingMoneyAmount);
+	OnRep_RemainingMoneyAmount();
 	return true;
 }
 
-void UResourceSystemComponent::OnRep_MoneyAmount()
+void UResourceSystemComponent::OnRep_RemainingMoneyAmount()
 {
 	OnMoneyAmountChanged.Broadcast(RemainingMoneyAmount);
 }

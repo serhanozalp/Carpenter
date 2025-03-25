@@ -6,6 +6,7 @@
 #include "Shop/CarpenterWorkbenchBase.h"
 #include "CarpenterWorkbenchChipper.generated.h"
 
+class ACarpenterButton;
 class ACarpenterItem;
 class UCarpenterWidgetChipperDisplay;
 struct FCarpenterItemData;
@@ -25,18 +26,19 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
+	virtual void Server_BindWorkbenchButtonsDelegates() override;
 	
 private:
 
 	//PROPERTY
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
 	TObjectPtr<UChildActorComponent> LeftButtonComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
 	TObjectPtr<UChildActorComponent> RightButtonComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
 	TObjectPtr<UChildActorComponent> BuildButtonComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Components")
@@ -48,7 +50,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedItemIndex)
 	int32 SelectedItemIndex;
 
-	TObjectPtr<UCarpenterWidgetChipperDisplay> ItemDisplayWidget;
+	TObjectPtr<UCarpenterWidgetChipperDisplay> CachedItemDisplayWidget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
 	TSubclassOf<ACarpenterItem> CarpenterItemClass;
@@ -63,15 +65,13 @@ private:
 	void HandleItemDisplayWidget();
 
 	UFUNCTION()
-	void Server_OnLeftButtonClicked(APawn* InteractorPawn);
+	void Server_OnLeftButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
 	
 	UFUNCTION()
-	void Server_OnRightButtonClicked(APawn* InteractorPawn);
+	void Server_OnRightButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
 
 	UFUNCTION()
-	void Server_OnBuildButtonClicked(APawn* InteractorPawn);
-	
-	void Server_BindButtonDelegates();
+	void Server_OnBuildButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
 
 	void Server_HandleItemBuild();
 };

@@ -3,6 +3,9 @@
 
 #include "Shop/CarpenterWorkbenchBase.h"
 
+#include "CarpenterTypes/CarpenterEnumTypes.h"
+#include "Shop/Items/CarpenterItem.h"
+
 ACarpenterWorkbenchBase::ACarpenterWorkbenchBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,7 +17,7 @@ ACarpenterWorkbenchBase::ACarpenterWorkbenchBase()
 	WorkbenchMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Workbench Mesh"));
 	WorkbenchMesh->SetupAttachment(GetRootComponent());
 
-	ItemHolderComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item Holder"));
+	ItemHolderComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Item Holder"));
 	ItemHolderComponent->SetupAttachment(GetRootComponent());
 }
 
@@ -22,16 +25,31 @@ void ACarpenterWorkbenchBase::Server_Initialize()
 {
 }
 
-void ACarpenterWorkbenchBase::Server_SetIsEmpty(bool bInIsEmpty)
+void ACarpenterWorkbenchBase::Server_SetAttachedCarpenterItem(ACarpenterItem* CarpenterItemToAttach)
 {
-	bIsEmpty = bInIsEmpty;
+	if (!ItemHolderComponent)
+	{
+		return;
+	}
+
+	AttachedCarpenterItem = CarpenterItemToAttach;
+	
+	if (!AttachedCarpenterItem)
+	{
+		return;
+	}
+	
+	AttachedCarpenterItem->AttachToComponent(ItemHolderComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	AttachedCarpenterItem->Server_SetItemState(ECarpenterItemState::AttachedToWorkbench);
+	AttachedCarpenterItem->Server_SetAttachedWorkbench(this);
 }
 
 void ACarpenterWorkbenchBase::SetOwningCarpenterShop(ACarpenterShop* CarpenterShop)
 {
-	if (CarpenterShop)
-	{
-		OwningCarpenterShop = CarpenterShop;
-	}
+	OwningCarpenterShop = CarpenterShop;
+}
+
+void ACarpenterWorkbenchBase::Server_BindWorkbenchButtonsDelegates()
+{
 }
 

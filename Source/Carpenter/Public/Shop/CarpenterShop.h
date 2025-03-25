@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAssets/DataAsset_ItemProperties.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/ServerInitialize.h"
 #include "CarpenterShop.generated.h"
 
+class UDataAsset_ItemProperties;
+class ACarpenterButton;
 class ACarpenterCharacter;
 class ACarpenterItem;
 class UResourceSystemComponent;
@@ -24,6 +27,7 @@ public:
 	FORCEINLINE UContractSystemComponent* GetContractSystemComponent() const { return ContractSystemComponent; }
 	FORCEINLINE UResourceSystemComponent* GetResourceSystemComponent() const { return ResourceSystemComponent; }
 	virtual void Server_Initialize() override;
+	FORCEINLINE UDataAsset_ItemProperties* GetItemPropertiesDataAsset() const { return ItemPropertiesDataAsset.Get(); };
 
 protected:
 	
@@ -60,8 +64,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UChildActorComponent> PainterWorkbench;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
+	TSoftObjectPtr<UDataAsset_ItemProperties> ItemPropertiesDataAsset;
+
 	//METHOD
 
 	UFUNCTION()
-	void Server_OnSellZoneButtonClicked(APawn* InteractorPawn);
+	void Server_OnSellZoneButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton);
+	void Server_LoadItemPropertiesDataAsset();
 };

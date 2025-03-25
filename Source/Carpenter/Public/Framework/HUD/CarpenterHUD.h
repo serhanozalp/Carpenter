@@ -12,8 +12,6 @@ UCLASS()
 class CARPENTER_API ACarpenterHUD : public AHUD
 {
 	GENERATED_BODY()
-
-private:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Custom|Settings", meta=(AllowPrivateAccess=true))
 	TSubclassOf<UCarpenterWidgetHUD> HUDWidgetClass;

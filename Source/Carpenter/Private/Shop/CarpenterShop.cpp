@@ -2,13 +2,13 @@
 
 #include "Shop/CarpenterShop.h"
 
-#include "Carpenter/DebugHelper.h"
 #include "Character/CarpenterCharacter.h"
-#include "Components/ContractSystemComponent.h"
-#include "Components/ResourceSystemComponent.h"
+#include "Components/Shop/ContractSystemComponent.h"
+#include "Components/Shop/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
-#include "Shop/Workbenches/Buttons/CarpenterWorkshopButtonBase.h"
+#include "Shop/Workbenches/CarpenterWorkbenchPainter.h"
+#include "Shop/Workbenches/Buttons/CarpenterButton.h"
 #include "Widgets/Shop/CarpenterWidgetContractsHolder.h"
 #include "Widgets/Shop/CarpenterWidgetResources.h"
 
@@ -51,20 +51,14 @@ void ACarpenterShop::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AvailableContractsWidgetComponent)
+	if (UCarpenterWidgetContractsHolder* ContractsHolderWidget = Cast<UCarpenterWidgetContractsHolder>(AvailableContractsWidgetComponent->GetWidget()))
 	{
-		if (UCarpenterWidgetContractsHolder* ContractsHolderWidget = Cast<UCarpenterWidgetContractsHolder>(AvailableContractsWidgetComponent->GetWidget()))
-		{
-			ContractsHolderWidget->SetupOnContractListChangedDelegate(ContractSystemComponent);
-		}
+		ContractsHolderWidget->SetupOnContractListChangedDelegate(ContractSystemComponent);
 	}
-
-	if (ResourceWidgetComponent)
+		
+	if (UCarpenterWidgetResources* ResourcesWidget = Cast<UCarpenterWidgetResources>(ResourceWidgetComponent->GetWidget()))
 	{
-		if (UCarpenterWidgetResources* ResourcesWidget = Cast<UCarpenterWidgetResources>(ResourceWidgetComponent->GetWidget()))
-		{
-			ResourcesWidget->SetupOnResourcesChangedDelegate(ResourceSystemComponent);
-		}
+		ResourcesWidget->SetupOnResourcesChangedDelegate(ResourceSystemComponent);
 	}
 	
 	if (HasAuthority())
@@ -75,6 +69,8 @@ void ACarpenterShop::BeginPlay()
 
 void ACarpenterShop::Server_Initialize()
 {
+	Server_LoadItemPropertiesDataAsset();
+		
 	if (ContractSystemComponent)
 	{
 		ContractSystemComponent->Server_Initialize();
@@ -93,30 +89,45 @@ void ACarpenterShop::Server_Initialize()
 		}
 	}
 
+	if (AActor* ChildActor = PainterWorkbench->GetChildActor())
+	{
+		if (ACarpenterWorkbenchPainter* WorkbenchPainter = Cast<ACarpenterWorkbenchPainter>(ChildActor))
+		{
+			WorkbenchPainter->Server_Initialize();
+		}
+	}
+
 	if (AActor* ChildActor = SellZone->GetChildActor())
 	{
-		if (ACarpenterWorkshopButtonBase* SellZoneButton = Cast<ACarpenterWorkshopButtonBase>(ChildActor))
+		if (ACarpenterButton* SellZoneButton = Cast<ACarpenterButton>(ChildActor))
 		{
 			SellZoneButton->OnButtonInteracted.AddDynamic(this, &ACarpenterShop::Server_OnSellZoneButtonClicked);
 		}
 	}
 }
 
-void ACarpenterShop::Server_OnSellZoneButtonClicked(APawn* InteractorPawn)
+void ACarpenterShop::Server_OnSellZoneButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
-	if (!InteractorPawn)
+	if (!InteractorCharacter)
 	{
 		return;
 	}
-	
-	if (ACarpenterCharacter* CarpenterCharacter = Cast<ACarpenterCharacter>(InteractorPawn))
+
+	float RewardAmount = InteractorCharacter->Server_SellItem(ContractSystemComponent);
+	if (RewardAmount > 0.0f)
 	{
-		float RewardAmount = CarpenterCharacter->Server_SellItem(ContractSystemComponent);
-		if (RewardAmount > 0.0f)
-		{
-			ResourceSystemComponent->Server_TryMoneyAmountChange(RewardAmount);
-		}
+		ResourceSystemComponent->Server_TryMoneyAmountChange(RewardAmount);
 	}
+}
+
+void ACarpenterShop::Server_LoadItemPropertiesDataAsset()
+{
+	checkf(!ItemPropertiesDataAsset.IsNull(), TEXT("Item Properties Data Asset is not assigned!"))
+	if (!ItemPropertiesDataAsset.IsValid())
+	{
+		ItemPropertiesDataAsset.LoadSynchronous();
+	}
+	checkf(ItemPropertiesDataAsset.Get()->IsValid(), TEXT("Item Properties Data Asset is not valid! Add colors and item data!"))
 }
 
 

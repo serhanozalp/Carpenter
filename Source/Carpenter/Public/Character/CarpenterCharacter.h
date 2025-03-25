@@ -7,6 +7,7 @@
 #include "Interfaces/Interactable.h"
 #include "CarpenterCharacter.generated.h"
 
+class ACarpenterWorkbenchBase;
 class ACarpenterItem;
 class ACarpenterPlayerController;
 class UContractSystemComponent;
@@ -20,8 +21,10 @@ public:
 
 	ACarpenterCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	bool Server_PickupItem(ACarpenterItem* ItemToPickUp);
+	
+	void Server_SetCarriedCarpenterItem(ACarpenterItem* CarpenterItem);
 	float Server_SellItem(UContractSystemComponent* ContractSystemComponent);
+	
 	FORCEINLINE ACarpenterItem* GetCarriedCarpenterItem() const { return CarriedCarpenterItem; }
 
 private:
@@ -42,8 +45,10 @@ private:
 
 	//METHOD
 
+	bool IsCarryingCarpenterItem() const { return CarriedCarpenterItem != nullptr; }
+	
 	void OnInteractAction(const FInputActionValue& InputActionValue);
 	
 	UFUNCTION(Server, Reliable)
-	void ServerRPC_InteractObject(const TScriptInterface<IInteractable>& ObjectToInteract, APawn* InteractorPawn);
+	void ServerRPC_InteractObject(const TScriptInterface<IInteractable>& ObjectToInteract, ACarpenterCharacter* InteractorCharacter);
 };

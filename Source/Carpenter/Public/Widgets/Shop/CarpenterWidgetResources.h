@@ -8,9 +8,7 @@
 
 class UTextBlock;
 class UResourceSystemComponent;
-/**
- * 
- */
+
 UCLASS()
 class CARPENTER_API UCarpenterWidgetResources : public UUserWidget
 {

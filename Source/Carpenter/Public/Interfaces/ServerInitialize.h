@@ -6,7 +6,6 @@
 #include "UObject/Interface.h"
 #include "ServerInitialize.generated.h"
 
-// This class does not need to be modified.
 UINTERFACE()
 class UServerInitialize : public UInterface
 {

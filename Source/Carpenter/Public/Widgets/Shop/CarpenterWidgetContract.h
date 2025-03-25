@@ -9,9 +9,7 @@
 struct FCarpenterContractData;
 class UImage;
 class UTextBlock;
-/**
- * 
- */
+
 UCLASS()
 class CARPENTER_API UCarpenterWidgetContract : public UUserWidget
 {

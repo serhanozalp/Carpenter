@@ -3,10 +3,16 @@
 
 #include "Widgets/Shop/CarpenterWidgetContractsHolder.h"
 
-#include "Carpenter/DebugHelper.h"
-#include "Components/ContractSystemComponent.h"
+#include "Components/Shop/ContractSystemComponent.h"
 #include "Components/HorizontalBox.h"
 #include "Widgets/Shop/CarpenterWidgetContract.h"
+
+void UCarpenterWidgetContractsHolder::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	checkf(IsValid(ContractWidgetClass), TEXT("Contract Widget Class is not set!"))
+}
 
 void UCarpenterWidgetContractsHolder::SetupOnContractListChangedDelegate(UContractSystemComponent* ContractSystemComponent)
 {
@@ -16,7 +22,7 @@ void UCarpenterWidgetContractsHolder::SetupOnContractListChangedDelegate(UContra
 	}
 }
 
-void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpenterContractData>& AvailableContracts)
+void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpenterContractData>& AvailableContractList)
 {
 	if (!HorizontalBox)
 	{
@@ -24,7 +30,7 @@ void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpen
 	}
 	
 	HorizontalBox->ClearChildren();
-	for (const FCarpenterContractData& CarpenterContractData : AvailableContracts)
+	for (const FCarpenterContractData& CarpenterContractData : AvailableContractList)
 	{
 		if (UCarpenterWidgetContract* ContractWidget = CreateWidget<UCarpenterWidgetContract>(this, ContractWidgetClass))
 		{
@@ -33,3 +39,4 @@ void UCarpenterWidgetContractsHolder::OnContractListChanged(const TArray<FCarpen
 		}
 	}
 }
+

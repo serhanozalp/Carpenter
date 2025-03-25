@@ -20,7 +20,7 @@ void ACarpenterPlayerController::Tick(float DeltaSeconds)
 void ACarpenterPlayerController::CheckForInteractableActors()
 {
 	APawn* ControlledPawn = GetPawn();
-	if (!ControlledPawn || !ControlledPawn->IsLocallyControlled())
+	if (!ControlledPawn || !ControlledPawn->IsLocallyControlled() || !GetWorld())
 	{
 		return;
 	}

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Interfaces/ServerInitialize.h"
+#include "Components/CarpenterShopActorComponent.h"
 #include "ResourceSystemComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMoneyAmountChanged, float MoneyAmount)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class CARPENTER_API UResourceSystemComponent : public UActorComponent, public IServerInitialize
+class CARPENTER_API UResourceSystemComponent : public UCarpenterShopActorComponent
 {
 	GENERATED_BODY()
 
@@ -24,9 +24,9 @@ public:
 	
 	UResourceSystemComponent();
 	virtual void BeginPlay() override;
-	virtual void Server_Initialize() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
+	virtual void Server_Initialize() override;
 	bool Server_TryMoneyAmountChange(float ChangeAmount);
 	
 private:
@@ -36,11 +36,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings" , meta = (ClampMin = "0"))
 	float StartingMoneyAmount = 400.0f;
 	
-	UPROPERTY(ReplicatedUsing = OnRep_MoneyAmount)
+	UPROPERTY(ReplicatedUsing = OnRep_RemainingMoneyAmount)
 	float RemainingMoneyAmount;
 
 	//METHOD
 
 	UFUNCTION()
-	void OnRep_MoneyAmount();
+	void OnRep_RemainingMoneyAmount();
 };

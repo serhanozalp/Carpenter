@@ -6,7 +6,8 @@
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
 
-// This class does not need to be modified.
+class ACarpenterCharacter;
+
 UINTERFACE()
 class UInteractable : public UInterface
 {
@@ -19,6 +20,6 @@ class CARPENTER_API IInteractable
 	
 public:
 
-	virtual void Interact(APawn* InteractorPawn) = 0;
+	virtual void Interact(ACarpenterCharacter* InteractorCharacter) = 0;
 	virtual void EnableOutline(bool bShouldEnable) = 0;
 };

@@ -5,16 +5,15 @@
 #include "CoreMinimal.h"
 #include "CarpenterTypes/CarpenterStructTypes.h"
 #include "Components/ActorComponent.h"
-#include "Interfaces/ServerInitialize.h"
+#include "Components/CarpenterShopActorComponent.h"
 #include "ContractSystemComponent.generated.h"
 
 class ACarpenterCharacter;
-class UDataAsset_ItemProperties;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnContractListChanged, const TArray<FCarpenterContractData>& AvailableContracts)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class CARPENTER_API UContractSystemComponent : public UActorComponent, public IServerInitialize
+class CARPENTER_API UContractSystemComponent : public UCarpenterShopActorComponent
 {
 	GENERATED_BODY()
 
@@ -27,21 +26,17 @@ public:
 	//METHOD
 	
 	UContractSystemComponent();
-	virtual void Server_Initialize() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UDataAsset_ItemProperties* GetItemPropertiesDataAsset();
+	
+	virtual void Server_Initialize() override;
 	float Server_CompleteContract(const FCarpenterContractData& ContractToCheck);
 
 private:
 	
 	//PROPERTY
 	
-	UPROPERTY(ReplicatedUsing = OnRep_AvailableContracts)
-	TArray<FCarpenterContractData> AvailableContracts;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
-	TSoftObjectPtr<UDataAsset_ItemProperties> ItemProperties;
+	UPROPERTY(ReplicatedUsing = OnRep_AvailableContractList)
+	TArray<FCarpenterContractData> AvailableContractList;
 
 	FTimerHandle GenerateContractTimerHandle;
 	
@@ -52,8 +47,7 @@ private:
 
 	void Server_GenerateRandomContract();
 	void Server_HandleGenerateContractTimer();
-	void Server_LoadItemPropertiesDataAsset();
 	
 	UFUNCTION()
-	void OnRep_AvailableContracts();
+	void OnRep_AvailableContractList();
 };

@@ -3,7 +3,7 @@
 
 #include "Widgets/Shop/CarpenterWidgetResources.h"
 
-#include "Components/ResourceSystemComponent.h"
+#include "Components/Shop/ResourceSystemComponent.h"
 #include "Components/TextBlock.h"
 
 void UCarpenterWidgetResources::SetupOnResourcesChangedDelegate(UResourceSystemComponent* ResourceSystemComponent)

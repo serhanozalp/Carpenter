@@ -4,10 +4,11 @@
 #include "Carpenter/Public/Character/CarpenterCharacter.h"
 
 #include "EnhancedInputComponent.h"
-#include "Carpenter/DebugHelper.h"
+#include "CarpenterTypes/CarpenterEnumTypes.h"
 #include "CarpenterTypes/CarpenterStructTypes.h"
-#include "Components/ContractSystemComponent.h"
+#include "Components/Shop/ContractSystemComponent.h"
 #include "Framework/PlayerControllers/CarpenterPlayerController.h"
+#include "Shop/CarpenterWorkbenchBase.h"
 #include "Shop/Items/CarpenterItem.h"
 
 ACarpenterCharacter::ACarpenterCharacter()
@@ -41,25 +42,28 @@ void ACarpenterCharacter::OnInteractAction(const FInputActionValue& InputActionV
 	}
 }
 
-bool ACarpenterCharacter::Server_PickupItem(ACarpenterItem* ItemToPickUp)
+void ACarpenterCharacter::Server_SetCarriedCarpenterItem(ACarpenterItem* CarpenterItem)
 {
-	if (!ItemToPickUp || CarriedCarpenterItem)
+	if (!CarpenterItem)
 	{
-		return false;
+		CarriedCarpenterItem = nullptr;
+		return;
 	}
-
-	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	if (ItemToPickUp->AttachToComponent(PickedUpItemHolder, TransformRules))
+	
+	if (IsCarryingCarpenterItem())
 	{
-		CarriedCarpenterItem = ItemToPickUp;
-		return true;
+		return;
 	}
-	return false;
+	
+	CarriedCarpenterItem = CarpenterItem;
+	CarriedCarpenterItem->AttachToComponent(PickedUpItemHolder, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	CarriedCarpenterItem->Server_SetItemState(ECarpenterItemState::PickedUp);
+	CarriedCarpenterItem->Server_SetAttachedWorkbench(nullptr);
 }
 
 float ACarpenterCharacter::Server_SellItem(UContractSystemComponent* ContractSystemComponent)
 {
-	if (!ContractSystemComponent || !CarriedCarpenterItem)
+	if (!ContractSystemComponent || !IsCarryingCarpenterItem())
 	{
 		return 0.0f;
 	}
@@ -75,10 +79,10 @@ float ACarpenterCharacter::Server_SellItem(UContractSystemComponent* ContractSys
 	return ContractSystemComponent->Server_CompleteContract(ContractDataToCheck);
 }
 
-void ACarpenterCharacter::ServerRPC_InteractObject_Implementation(const TScriptInterface<IInteractable>& ObjectToInteract, APawn* InteractorPawn)
+void ACarpenterCharacter::ServerRPC_InteractObject_Implementation(const TScriptInterface<IInteractable>& ObjectToInteract, ACarpenterCharacter* InteractorCharacter)
 {
 	if (ObjectToInteract)
 	{
-		ObjectToInteract->Interact(InteractorPawn);
+		ObjectToInteract->Interact(InteractorCharacter);
 	}
 }

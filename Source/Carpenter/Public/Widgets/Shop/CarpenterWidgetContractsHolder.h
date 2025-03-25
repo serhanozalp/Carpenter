@@ -10,9 +10,7 @@ class UHorizontalBox;
 class UCarpenterWidgetContract;
 struct FCarpenterContractData;
 class UContractSystemComponent;
-/**
- * 
- */
+
 UCLASS()
 class CARPENTER_API UCarpenterWidgetContractsHolder : public UUserWidget
 {
@@ -21,13 +19,17 @@ class CARPENTER_API UCarpenterWidgetContractsHolder : public UUserWidget
 public:
 	
 	void SetupOnContractListChangedDelegate(UContractSystemComponent* ContractSystemComponent);
-	void OnContractListChanged(const TArray<FCarpenterContractData>& AvailableContracts);
+	void OnContractListChanged(const TArray<FCarpenterContractData>& AvailableContractList);
+
+protected:
+	
+	virtual void NativeConstruct() override;
 
 private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> HorizontalBox;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
 	TSubclassOf<UCarpenterWidgetContract> ContractWidgetClass;
 };

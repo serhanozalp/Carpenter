@@ -14,7 +14,7 @@ FCarpenterItemData* UDataAsset_ItemProperties::GetRandomItemData()
 	return &CarpenterItemDataList[RandomIndex];
 }
 
-FColor* UDataAsset_ItemProperties::GetRandomColor()
+FLinearColor* UDataAsset_ItemProperties::GetRandomColor()
 {
 	if (ColorList.IsEmpty())
 	{

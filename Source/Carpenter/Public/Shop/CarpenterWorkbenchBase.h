@@ -7,6 +7,7 @@
 #include "Interfaces/ServerInitialize.h"
 #include "CarpenterWorkbenchBase.generated.h"
 
+class ACarpenterItem;
 class ACarpenterShop;
 
 UCLASS()
@@ -18,9 +19,10 @@ public:
 	
 	ACarpenterWorkbenchBase();
 	virtual void Server_Initialize() override;
-
-	void Server_SetIsEmpty(bool bInIsEmpty);
-
+	void Server_SetAttachedCarpenterItem(ACarpenterItem* CarpenterItemToAttach);
+	FORCEINLINE bool IsEmpty() const { return AttachedCarpenterItem == nullptr; }
+	FORCEINLINE USceneComponent* GetItemHolderComponent() const { return ItemHolderComponent; }
+	
 protected:
 
 	//PROPERTY
@@ -31,12 +33,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
 	TObjectPtr<USceneComponent> ItemHolderComponent;
 
-	bool bIsEmpty = true;
+	UPROPERTY()
+	TObjectPtr<ACarpenterItem> AttachedCarpenterItem;
 
 	//METHOD
 	
 	UFUNCTION(BlueprintCallable, DisplayName = "Set Owning Shop")
 	void SetOwningCarpenterShop(ACarpenterShop* CarpenterShop);
+
+	virtual void Server_BindWorkbenchButtonsDelegates();
 
 private:
 

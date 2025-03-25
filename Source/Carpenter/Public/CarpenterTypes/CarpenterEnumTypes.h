@@ -3,8 +3,8 @@
 UENUM()
 enum class ECarpenterItemState : uint8
 {
-	None,
 	Initial,
+	AttachedToWorkbench,
 	PickedUp,
 	Dropped
 };

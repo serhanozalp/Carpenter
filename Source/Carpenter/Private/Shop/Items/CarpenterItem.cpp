@@ -28,26 +28,14 @@ void ACarpenterItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ACarpenterItem, ItemMeshToApply, COND_InitialOnly);
 }
 
-void ACarpenterItem::Interact(APawn* InteractorPawn)
+void ACarpenterItem::Interact(ACarpenterCharacter* InteractorCharacter)
 {
-	if (!InteractorPawn)
+	if (!InteractorCharacter)
 	{
 		return;
 	}
-	
-	if (ACarpenterCharacter* CarpenterCharacter = Cast<ACarpenterCharacter>(InteractorPawn))
-	{
-		if (CarpenterCharacter->Server_PickupItem(this))
-		{
-			ItemState = ECarpenterItemState::PickedUp;
-			HandleItemState();
-			if (AttachedWorkBench)
-			{
-				AttachedWorkBench->Server_SetIsEmpty(true);
-				AttachedWorkBench = nullptr;
-			}
-		}
-	}
+
+	InteractorCharacter->Server_SetCarriedCarpenterItem(this);
 }
 
 void ACarpenterItem::EnableOutline(bool bShouldEnable)
@@ -79,10 +67,12 @@ void ACarpenterItem::Server_SetItemState(ECarpenterItemState InItemState)
 
 void ACarpenterItem::Server_SetAttachedWorkbench(ACarpenterWorkbenchBase* Workbench)
 {
-	if (Workbench)
+	if (!Workbench)
 	{
-		AttachedWorkBench = Workbench;
+		AttachedWorkBench->Server_SetAttachedCarpenterItem(nullptr);
 	}
+	
+	AttachedWorkBench = Workbench;
 }
 
 void ACarpenterItem::OnRep_ItemMeshToApply()
@@ -102,7 +92,7 @@ void ACarpenterItem::HandleItemState()
 {
 	switch (ItemState)
 	{
-		case ECarpenterItemState::Initial:
+		case ECarpenterItemState::AttachedToWorkbench:
 			ItemMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 			ItemMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		break;
@@ -111,6 +101,7 @@ void ACarpenterItem::HandleItemState()
 		break;
 		case ECarpenterItemState::Dropped:
 		break;
+		
 	}
 }
 

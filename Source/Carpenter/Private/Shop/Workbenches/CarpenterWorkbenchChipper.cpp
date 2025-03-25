@@ -4,15 +4,13 @@
 #include "Shop/Workbenches/CarpenterWorkbenchChipper.h"
 
 #include "Carpenter/DebugHelper.h"
-#include "CarpenterTypes/CarpenterEnumTypes.h"
-#include "Components/ContractSystemComponent.h"
-#include "Components/ResourceSystemComponent.h"
+#include "Components/Shop/ResourceSystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "DataAssets/DataAsset_ItemProperties.h"
 #include "Net/UnrealNetwork.h"
 #include "Shop/CarpenterShop.h"
 #include "Shop/Items/CarpenterItem.h"
-#include "Shop/Workbenches/Buttons/CarpenterWorkshopButtonBase.h"
+#include "Shop/Workbenches/Buttons/CarpenterButton.h"
 #include "Widgets/Shop/Workbenches/CarpenterWidgetChipperDisplay.h"
 
 ACarpenterWorkbenchChipper::ACarpenterWorkbenchChipper()
@@ -37,30 +35,42 @@ ACarpenterWorkbenchChipper::ACarpenterWorkbenchChipper()
 void ACarpenterWorkbenchChipper::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		Server_BindButtonDelegates();
-	}
-	else
+	
+	if (!HasAuthority())
 	{
 		OnRep_SelectedItemIndex();
 	}
 }
 
-void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked(APawn* InteractorPawn)
+void ACarpenterWorkbenchChipper::Server_BindWorkbenchButtonsDelegates()
+{
+	if (ACarpenterButton* LeftButton = Cast<ACarpenterButton>(LeftButtonComponent->GetChildActor()))
+	{
+		LeftButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked);
+	}
+	if (ACarpenterButton* RightButton = Cast<ACarpenterButton>(RightButtonComponent->GetChildActor()))
+	{
+		RightButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnRightButtonClicked);
+	}
+	if (ACarpenterButton* BuildButton = Cast<ACarpenterButton>(BuildButtonComponent->GetChildActor()))
+	{
+		BuildButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked);
+	}
+}
+
+void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
 	Server_SetSelectedItemIndex(--SelectedItemIndex);
 	HandleItemDisplayWidget();
 }
 
-void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked(APawn* InteractorPawn)
+void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
 	Server_SetSelectedItemIndex(++SelectedItemIndex);
 	HandleItemDisplayWidget();
 }
 
-void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked(APawn* InteractorPawn)
+void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
 	if (!CarpenterItemClass)
 	{
@@ -71,7 +81,7 @@ void ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked(APawn* InteractorPa
 
 void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
 {
-	if (!bIsEmpty || CarpenterItemDataList.IsEmpty() || !OwningCarpenterShop->GetResourceSystemComponent())
+	if (!IsEmpty() || CarpenterItemDataList.IsEmpty() || !OwningCarpenterShop->GetResourceSystemComponent())
 	{
 		return;
 	}
@@ -81,15 +91,10 @@ void ACarpenterWorkbenchChipper::Server_HandleItemBuild()
 		return;
 	}
 	
-	FVector ItemPosition = ItemHolderComponent->GetComponentLocation();
-	FRotator ItemRotation = ItemHolderComponent->GetComponentRotation();
-	
-	if (ACarpenterItem* CarpenterItem = GetWorld()->SpawnActor<ACarpenterItem>(CarpenterItemClass, ItemPosition, ItemRotation))
+	if (ACarpenterItem* CarpenterItem = GetWorld()->SpawnActor<ACarpenterItem>(CarpenterItemClass, FVector::ZeroVector, FRotator::ZeroRotator))
 	{
-		CarpenterItem->Server_SetItemState(ECarpenterItemState::Initial);
 		CarpenterItem->Server_SetItemMesh(CarpenterItemDataList[SelectedItemIndex].Mesh);
-		CarpenterItem->Server_SetAttachedWorkbench(this);
-		bIsEmpty = false;
+		Server_SetAttachedCarpenterItem(CarpenterItem);
 	}
 }
 
@@ -99,14 +104,13 @@ void ACarpenterWorkbenchChipper::Server_Initialize()
 	{
 		return;
 	}
-	
-	if (UContractSystemComponent* ContractSystemComponent = OwningCarpenterShop->GetContractSystemComponent())
+
+	if (UDataAsset_ItemProperties* ItemPropertiesDataAsset = OwningCarpenterShop->GetItemPropertiesDataAsset())
 	{
-		if (UDataAsset_ItemProperties* ItemPropertiesDataAsset = ContractSystemComponent->GetItemPropertiesDataAsset())
-		{
-			CarpenterItemDataList = ItemPropertiesDataAsset->CarpenterItemDataList;
-		}
+		CarpenterItemDataList = ItemPropertiesDataAsset->CarpenterItemDataList;
 	}
+
+	Server_BindWorkbenchButtonsDelegates();
 	Server_SetSelectedItemIndex(0);
 }
 
@@ -132,30 +136,14 @@ void ACarpenterWorkbenchChipper::HandleItemDisplayWidget()
 		return;
 	}
 
-	if (!ItemDisplayWidget && ItemDisplayWidgetComponent->GetWidget())
+	if (!CachedItemDisplayWidget && ItemDisplayWidgetComponent->GetWidget())
 	{
-		ItemDisplayWidget = CastChecked<UCarpenterWidgetChipperDisplay>(ItemDisplayWidgetComponent->GetWidget());
+		CachedItemDisplayWidget = CastChecked<UCarpenterWidgetChipperDisplay>(ItemDisplayWidgetComponent->GetWidget());
 	}
 	
 	if (SelectedItemIndex < CarpenterItemDataList.Num())
 	{
-		ItemDisplayWidget->SetItemDisplayText(CarpenterItemDataList[SelectedItemIndex].Name);
-	}
-}
-
-void ACarpenterWorkbenchChipper::Server_BindButtonDelegates()
-{
-	if (ACarpenterWorkshopButtonBase* LeftButton = Cast<ACarpenterWorkshopButtonBase>(LeftButtonComponent->GetChildActor()))
-	{
-			LeftButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked);
-	}
-	if (ACarpenterWorkshopButtonBase* RightButton = Cast<ACarpenterWorkshopButtonBase>(RightButtonComponent->GetChildActor()))
-	{
-		RightButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnRightButtonClicked);
-	}
-	if (ACarpenterWorkshopButtonBase* BuildButton = Cast<ACarpenterWorkshopButtonBase>(BuildButtonComponent->GetChildActor()))
-	{
-		BuildButton->OnButtonInteracted.AddDynamic(this, &ACarpenterWorkbenchChipper::Server_OnBuildButtonClicked);
+		CachedItemDisplayWidget->SetItemDisplayText(CarpenterItemDataList[SelectedItemIndex].Name);
 	}
 }
 

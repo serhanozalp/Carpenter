@@ -20,7 +20,7 @@ public:
 	
 	ACarpenterItem();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void Interact(APawn* InteractorPawn) override;
+	virtual void Interact(ACarpenterCharacter* InteractorCharacter) override;
 	virtual void EnableOutline(bool bShouldEnable) override;
 	
 	void Server_SetItemMesh(UStaticMesh* InItemMesh);
