@@ -3,13 +3,12 @@
 
 #include "Components/Shop/ContractSystemComponent.h"
 
-#include "Carpenter/DebugHelper.h"
 #include "Net/UnrealNetwork.h"
 #include "Shop/CarpenterShop.h"
 
 UContractSystemComponent::UContractSystemComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UContractSystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -32,9 +31,10 @@ void UContractSystemComponent::Server_HandleGenerateContractTimer()
 		{
 			World->GetTimerManager().ClearTimer(GenerateContractTimerHandle);
 		}
-		else if (AvailableContractList.Num() < MaxContractAmount && !World->GetTimerManager().IsTimerActive(GenerateContractTimerHandle))
+		else if (AvailableContractList.Num() < MaxContractAmount)
 		{
-			World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, 5.0f, true);
+			float ContractTimerValueCooldown = FMath::RandRange(MinContractTimerCooldown, MaxContractTimerCooldown);
+			World->GetTimerManager().SetTimer(GenerateContractTimerHandle, this, &UContractSystemComponent::Server_GenerateRandomContract, ContractTimerValueCooldown, true);
 		}
 	}
 }
@@ -51,7 +51,7 @@ float UContractSystemComponent::Server_CompleteContract(const FCarpenterContract
 			continue;
 		}
 
-		RewardMultiplier = 0.5;
+		RewardMultiplier = ColorMismatchPenalty;
 		ContractToCompleteIndex = i;
 
 		if (ContractToCheck.RequestedItemColor == AvailableContractList[i].RequestedItemColor)
@@ -80,8 +80,8 @@ void UContractSystemComponent::Server_GenerateRandomContract()
 	
 	RandomContract.RequestedItemData = *CachedOwningCarpenterShop->GetItemPropertiesDataAsset()->GetRandomItemData();
 	RandomContract.RequestedItemColor = *CachedOwningCarpenterShop->GetItemPropertiesDataAsset()->GetRandomColor();
-	float RewardMultiplier = FMath::RandRange(2.2f, 2.6f);
-	RandomContract.RewardAmount = RandomContract.RequestedItemData.CostAmount * RewardMultiplier;
+	float ContractRewardMultiplier = FMath::RandRange(MinContractRewardMultiplier, MaxContractRewardMultiplier);
+	RandomContract.RewardAmount = RandomContract.RequestedItemData.CostAmount * ContractRewardMultiplier;
 	
 	AvailableContractList.Add(RandomContract);
 	OnRep_AvailableContractList();

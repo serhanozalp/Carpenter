@@ -9,7 +9,7 @@
 
 ACarpenterColorableButton::ACarpenterColorableButton()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void ACarpenterColorableButton::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

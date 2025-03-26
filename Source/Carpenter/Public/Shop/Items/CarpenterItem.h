@@ -35,10 +35,10 @@ private:
 
 	//PROPERTY
 	
-	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	UPROPERTY(VisibleAnywhere, Category = "Custom|CarpenterItem|Components")
 	TObjectPtr<UStaticMeshComponent> ItemMeshComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Materials")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterItem|Materials")
 	TObjectPtr<UMaterial> OverlayMaterial;
 
 	UPROPERTY()

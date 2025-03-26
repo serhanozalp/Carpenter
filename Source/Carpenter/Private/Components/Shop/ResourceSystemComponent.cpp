@@ -7,7 +7,7 @@
 
 UResourceSystemComponent::UResourceSystemComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UResourceSystemComponent::BeginPlay()

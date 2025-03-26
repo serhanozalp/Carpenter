@@ -13,6 +13,6 @@ class CARPENTER_API ACarpenterHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Custom|Settings", meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Custom|CarpenterHUD|Settings", meta=(AllowPrivateAccess=true))
 	TSubclassOf<UCarpenterWidgetHUD> HUDWidgetClass;
 };

@@ -50,7 +50,7 @@ private:
 	TArray<FCarpenterItemData> CarpenterItemDataList;
 
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedItemIndex)
-	int32 SelectedItemIndex;
+	uint8 SelectedItemIndex;
 
 	UPROPERTY()
 	TObjectPtr<UCarpenterWidgetChipperDisplay> CachedItemDisplayWidget;

@@ -33,7 +33,7 @@ private:
 
 	//PROPERTY
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings" , meta = (ClampMin = "0"))
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ResourceSystemComponent|Settings" , meta = (ClampMin = "0"))
 	float StartingMoneyAmount = 400.0f;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_RemainingMoneyAmount)

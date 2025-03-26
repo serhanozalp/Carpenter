@@ -16,16 +16,16 @@ public:
 
 	//PROPERTY
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|DataAsset_ItemProperties|Data")
 	TArray<FCarpenterItemData> CarpenterItemDataList;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Data")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|DataAsset_ItemProperties|Data")
 	TArray<FLinearColor> ColorList;
 	
 	//METHOD
 	
 	FCarpenterItemData* GetRandomItemData();
 	FLinearColor* GetRandomColor();
-
-	FORCEINLINE bool IsValid() const { return CarpenterItemDataList.Num() > 0 && ColorList.Num() > 0; }
+	
+	bool IsValid() const;
 };

@@ -31,10 +31,10 @@ private:
 
 	//PROPERTY
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterCharacter|Input")
 	TObjectPtr<UInputAction> InteractAction;
 
-	UPROPERTY(VisibleAnywhere, Category = "Custom|Components")
+	UPROPERTY(VisibleAnywhere, Category = "Custom|CarpenterCharacter|Components")
 	TObjectPtr<USceneComponent> PickedUpItemHolder;
 	
 	UPROPERTY()

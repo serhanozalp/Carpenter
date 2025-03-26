@@ -23,3 +23,12 @@ FLinearColor* UDataAsset_ItemProperties::GetRandomColor()
 	int32 RandomIndex = FMath::RandRange(0, ColorList.Num() - 1);
 	return &ColorList[RandomIndex];
 }
+
+bool UDataAsset_ItemProperties::IsValid() const
+{
+	if (CarpenterItemDataList.Num() > 256)
+	{
+		UE_LOG(LogNetTraffic, Warning, TEXT("Using uint8 to replicate index. Carpenter Item Data List size should not exceed 256!"));
+	}
+	return CarpenterItemDataList.Num() > 0 && ColorList.Num() > 0;
+}

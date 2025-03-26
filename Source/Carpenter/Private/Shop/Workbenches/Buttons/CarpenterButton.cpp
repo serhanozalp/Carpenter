@@ -5,7 +5,7 @@
 
 ACarpenterButton::ACarpenterButton()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	
 	ButtonMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Button Mesh Component"));

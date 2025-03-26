@@ -14,7 +14,7 @@
 
 ACarpenterWorkbenchChipper::ACarpenterWorkbenchChipper()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	LeftButtonComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Left Button"));
 	LeftButtonComponent->SetupAttachment(GetRootComponent());
@@ -84,13 +84,13 @@ void ACarpenterWorkbenchChipper::Server_BindWorkbenchButtonsDelegates()
 
 void ACarpenterWorkbenchChipper::Server_OnLeftButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
-	Server_SetSelectedItemIndex(--SelectedItemIndex);
+	Server_SetSelectedItemIndex(SelectedItemIndex - 1);
 	HandleItemDisplayWidget();
 }
 
 void ACarpenterWorkbenchChipper::Server_OnRightButtonClicked(ACarpenterCharacter* InteractorCharacter, ACarpenterButton* InteractedButton)
 {
-	Server_SetSelectedItemIndex(++SelectedItemIndex);
+	Server_SetSelectedItemIndex(SelectedItemIndex + 1);
 	HandleItemDisplayWidget();
 }
 

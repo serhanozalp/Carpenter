@@ -25,7 +25,7 @@ private:
 	
 	//PROPERTY
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings")
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|CarpenterPlayerController|Settings")
 	float InteractionRange = 500.0f;
 
 	UPROPERTY()

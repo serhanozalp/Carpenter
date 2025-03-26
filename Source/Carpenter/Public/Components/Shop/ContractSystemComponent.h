@@ -40,8 +40,23 @@ private:
 
 	FTimerHandle GenerateContractTimerHandle;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Custom|Settings", meta = (ClampMin = "0"))
-	int32 MaxContractAmount = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ContractSystemComponent|Settings", meta = (ClampMin = "0"))
+	int32 MaxContractAmount = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ContractSystemComponent|Settings", meta = (ClampMin = "0"))
+	float MinContractRewardMultiplier = 2.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ContractSystemComponent|Settings", meta = (ClampMin = "0"))
+	float MaxContractRewardMultiplier = 3.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ContractSystemComponent|Settings", meta = (ClampMin = "0"))
+	float MinContractTimerCooldown = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ContractSystemComponent|Settings", meta = (ClampMin = "0"))
+	float MaxContractTimerCooldown = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Custom|ContractSystemComponent|Settings", meta = (ClampMin = "0", ClampMax = "1"))
+	float ColorMismatchPenalty = 0.5f;
 	
 	//METHOD
 

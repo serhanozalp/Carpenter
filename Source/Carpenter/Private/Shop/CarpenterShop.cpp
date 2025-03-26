@@ -15,7 +15,7 @@
 
 ACarpenterShop::ACarpenterShop()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -33,10 +33,12 @@ ACarpenterShop::ACarpenterShop()
 	AvailableContractsWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Available Contracts Widget"));
 	AvailableContractsWidgetComponent->SetupAttachment(GetRootComponent());
 	AvailableContractsWidgetComponent->SetDrawAtDesiredSize(true);
+	AvailableContractsWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ResourceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Resource Widget Component"));
 	ResourceWidgetComponent->SetupAttachment(GetRootComponent());
 	ResourceWidgetComponent->SetDrawAtDesiredSize(true);
+	ResourceWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	SellButtonComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Sell Zone"));
 	SellButtonComponent->SetupAttachment(GetRootComponent());

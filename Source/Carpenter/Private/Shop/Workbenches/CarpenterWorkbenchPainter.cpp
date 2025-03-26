@@ -11,7 +11,7 @@
 
 ACarpenterWorkbenchPainter::ACarpenterWorkbenchPainter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	PaintButtonsHolder = CreateDefaultSubobject<USceneComponent>("Paint Buttons Holder");
 	PaintButtonsHolder->SetupAttachment(GetRootComponent());
